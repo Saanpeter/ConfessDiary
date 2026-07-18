@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+
+{% block page_title %}{{ title }}{% endblock %}
+{% block page_subtitle %}Settings{% endblock %}
+
+{% block content %}
+<div class="placeholder-card">
+    <h2>{{ title }}</h2>
+    <p>{{ message }}</p>
+    <a href="{% url 'settings_page' %}" class="nav-link" style="display:inline-block;margin-top:16px;">← Back to Settings</a>
+</div>
+{% endblock %}

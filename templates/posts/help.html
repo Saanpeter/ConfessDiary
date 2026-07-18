@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+
+{% block page_title %}Help{% endblock %}
+{% block page_subtitle %}Settings{% endblock %}
+
+{% block content %}
+<div class="placeholder-card" style="text-align:left;">
+    <h3 style="font-family:'Caveat',cursive;font-size:1.4rem;">Posting</h3>
+    <p>Tap "New Post" in the sidebar to share a confession — text, photo, or video.</p>
+
+    <h3 style="font-family:'Caveat',cursive;font-size:1.4rem;">Anonymity</h3>
+    <p>Your posts never display your username or picture. Only your comments show your profile picture.</p>
+
+    <h3 style="font-family:'Caveat',cursive;font-size:1.4rem;">Deleting Content</h3>
+    <p>You can delete any post or comment you've created — look for the delete icon on your own content.</p>
+
+    <h3 style="font-family:'Caveat',cursive;font-size:1.4rem;">Still stuck?</h3>
+    <p>Use "Report a Problem" in Settings to send us details directly.</p>
+
+    <p style="margin-top:20px;"><a href="{% url 'settings_page' %}" class="nav-link">← Back to Settings</a></p>
+</div>
+{% endblock %}

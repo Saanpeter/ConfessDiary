@@ -56,7 +56,12 @@
                     </form>
                 </div>
                 <div class="greeting">
+                    {% if user.is_authenticated and user.profile_picture %}
+                    <img src="{{ user.profile_picture.url }}" alt=""
+                         style="width:28px;height:28px;border-radius:50%;object-fit:cover;">
+                    {% else %}
                     <span class="avatar-badge">🎭</span>
+                    {% endif %}
                     {% if user.is_authenticated %}
                         Hey, {{ user.username|default:"Stranger" }}!
                     {% else %}
@@ -90,5 +95,109 @@
             </div>
         </aside>
     </div>
+
+    <div class="upload-overlay" id="uploadOverlay">
+        <div class="upload-box">
+            <div class="upload-spinner"></div>
+            <p id="uploadStatusText">Posting your confession...</p>
+            <p class="upload-sub" id="uploadStatusSub">This can take a moment for photos and videos.</p>
+        </div>
+    </div>
+
+    <script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const overlay = document.getElementById('uploadOverlay');
+        const statusText = document.getElementById('uploadStatusText');
+        const statusSub = document.getElementById('uploadStatusSub');
+
+        document.querySelectorAll('form[enctype="multipart/form-data"]').forEach(function (form) {
+            form.addEventListener('submit', function () {
+                const fileInputs = form.querySelectorAll('input[type="file"]');
+                let hasFile = false;
+                let isVideo = false;
+
+                fileInputs.forEach(function (input) {
+                    if (input.files && input.files.length > 0) {
+                        hasFile = true;
+                        if (input.name === 'video') isVideo = true;
+                    }
+                });
+
+                if (hasFile) {
+                    statusText.textContent = isVideo ? 'Uploading your video...' : 'Uploading your photo...';
+                    statusSub.textContent = isVideo
+                        ? 'Videos can take up to a minute depending on size.'
+                        : 'Almost there...';
+                } else {
+                    statusText.textContent = 'Posting your confession...';
+                    statusSub.textContent = 'One moment...';
+                }
+
+                overlay.classList.add('active');
+
+                const btn = form.querySelector('button[type="submit"]');
+                if (btn) {
+                    btn.disabled = true;
+                    btn.textContent = 'Posting...';
+                }
+            });
+        });
+    });
+    </script>
+
+    <script>
+    document.addEventListener('DOMContentLoaded', function () {
+        document.querySelectorAll('input[type="file"]').forEach(function (input) {
+            const label = input.closest('label');
+            const container = label ? label.parentElement : input.parentElement;
+
+            const preview = document.createElement('div');
+            preview.className = 'file-preview';
+            preview.innerHTML = '<span class="file-thumb"></span><span class="file-name"></span><button type="button" class="file-remove">Remove</button>';
+            container.appendChild(preview);
+
+            const thumbSlot = preview.querySelector('.file-thumb');
+            const nameSlot = preview.querySelector('.file-name');
+            const removeBtn = preview.querySelector('.file-remove');
+
+            input.addEventListener('change', function () {
+                if (input.files && input.files.length > 0) {
+                    const file = input.files[0];
+                    nameSlot.textContent = file.name + ' (' + (file.size / 1024 / 1024).toFixed(1) + ' MB)';
+
+                    thumbSlot.innerHTML = '';
+                    if (file.type.startsWith('image/')) {
+                        const img = document.createElement('img');
+                        img.src = URL.createObjectURL(file);
+                        img.style.width = '44px';
+                        img.style.height = '44px';
+                        img.style.objectFit = 'cover';
+                        img.style.borderRadius = '4px';
+                        thumbSlot.appendChild(img);
+                    } else if (file.type.startsWith('video/')) {
+                        const vid = document.createElement('video');
+                        vid.src = URL.createObjectURL(file);
+                        vid.muted = true;
+                        vid.style.width = '44px';
+                        vid.style.height = '44px';
+                        vid.style.objectFit = 'cover';
+                        vid.style.borderRadius = '4px';
+                        thumbSlot.appendChild(vid);
+                    }
+
+                    preview.classList.add('active');
+                } else {
+                    preview.classList.remove('active');
+                }
+            });
+
+            removeBtn.addEventListener('click', function () {
+                input.value = '';
+                preview.classList.remove('active');
+                thumbSlot.innerHTML = '';
+            });
+        });
+    });
+    </script>
 </body>
 </html>

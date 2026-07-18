@@ -32,9 +32,10 @@
                     <button type="submit">🔖</button>
                 </form>
                 <a href="{% url 'post_detail' post.id %}" class="view-comments">View {{ post.comments.count }} comments</a>
-                 {% if user == post.author %}
+                {% if user == post.author %}
                 <a href="{% url 'delete_post' post.id %}" style="color:#d9534f;text-decoration:none;">🗑️</a>
                 {% endif %}
+            </div>
         </div>
     </article>
     {% empty %}
