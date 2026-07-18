@@ -122,7 +122,12 @@
 
     {% csrf_token %}
 
-    <span class="avatar-badge">🎭</span>
+    {% if comment.user.profile_picture %}
+    <img src="{{ comment.user.profile_picture.url }}" alt=""
+         style="width:24px;height:24px;border-radius:50%;object-fit:cover;flex-shrink:0;">
+    {% else %}
+    <span class="avatar-badge small">🎭</span>
+    {% endif %}
 
     <div class="composer-main">
 

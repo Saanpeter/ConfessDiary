@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+
+{% block page_title %}About{% endblock %}
+{% block page_subtitle %}Settings{% endblock %}
+
+{% block content %}
+<div class="placeholder-card">
+    <h2>Whisperbook</h2>
+    <p>Speak freely. Stay anonymous.</p>
+    <p style="color:var(--ink-soft);font-size:0.9rem;margin-top:16px;">Version 1.0 — built with Django.</p>
+    <p style="margin-top:20px;"><a href="{% url 'settings_page' %}" class="nav-link">← Back to Settings</a></p>
+</div>
+{% endblock %}

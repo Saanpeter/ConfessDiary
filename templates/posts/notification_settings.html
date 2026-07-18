@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+
+{% block page_title %}Notification Settings{% endblock %}
+{% block page_subtitle %}Settings{% endblock %}
+
+{% block content %}
+<div class="placeholder-card" style="text-align:left;">
+    <form method="post">
+        {% csrf_token %}
+        <label style="display:flex;align-items:center;gap:10px;margin-bottom:16px;">
+            <input type="checkbox" name="email_notifications" {% if settings_obj.email_notifications %}checked{% endif %}>
+            Email notifications
+        </label>
+        <label style="display:flex;align-items:center;gap:10px;margin-bottom:20px;">
+            <input type="checkbox" name="push_notifications" {% if settings_obj.push_notifications %}checked{% endif %}>
+            Push notifications
+        </label>
+        <button type="submit" class="post-btn">Save</button>
+    </form>
+    <p style="margin-top:20px;"><a href="{% url 'settings_page' %}" class="nav-link">← Back to Settings</a></p>
+</div>
+{% endblock %}

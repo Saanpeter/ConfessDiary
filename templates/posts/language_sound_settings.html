@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+
+{% block page_title %}Language and Sound{% endblock %}
+{% block page_subtitle %}Settings{% endblock %}
+
+{% block content %}
+<div class="placeholder-card" style="text-align:left;">
+    <form method="post">
+        {% csrf_token %}
+        <label style="display:block;margin-bottom:8px;color:var(--ink-soft);">Language</label>
+        <select name="language" style="font-family:'Kalam',cursive;padding:8px 12px;border-radius:6px;border:1px solid #ddd;margin-bottom:20px;">
+            {% for code, label in settings_obj.LANGUAGE_CHOICES %}
+            <option value="{{ code }}" {% if settings_obj.language == code %}selected{% endif %}>{{ label }}</option>
+            {% endfor %}
+        </select>
+        <br>
+        <label style="display:flex;align-items:center;gap:10px;margin-bottom:20px;">
+            <input type="checkbox" name="sound_enabled" {% if settings_obj.sound_enabled %}checked{% endif %}>
+            Enable sounds
+        </label>
+        <button type="submit" class="post-btn">Save</button>
+    </form>
+    <p style="margin-top:20px;"><a href="{% url 'settings_page' %}" class="nav-link">← Back to Settings</a></p>
+</div>
+{% endblock %}

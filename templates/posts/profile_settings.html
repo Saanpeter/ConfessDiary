@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+
+{% block page_title %}Profile Settings{% endblock %}
+{% block page_subtitle %}Settings{% endblock %}
+
+{% block content %}
+<div class="placeholder-card" style="text-align:left;">
+    <h2 style="text-align:center;">Profile Picture</h2>
+    <p style="text-align:center;color:var(--ink-soft);font-size:0.85rem;">
+        This is only visible on your comments — your posts stay fully anonymous.
+    </p>
+
+    <div style="text-align:center;margin:20px 0;">
+        {% if user.profile_picture %}
+        <img src="{{ user.profile_picture.url }}" alt="Profile picture"
+             style="width:90px;height:90px;border-radius:50%;object-fit:cover;box-shadow:0 2px 8px rgba(0,0,0,0.2);">
+        {% else %}
+        <span class="avatar-badge" style="width:90px;height:90px;font-size:2.2rem;">🎭</span>
+        {% endif %}
+    </div>
+
+    <form method="post" enctype="multipart/form-data" style="text-align:center;">
+        {% csrf_token %}
+        <input type="file" name="profile_picture" accept="image/*" style="font-family:'Kalam',cursive;">
+        <br><br>
+        <button type="submit" class="post-btn">Upload</button>
+    </form>
+
+    <p style="text-align:center;margin-top:20px;">
+        <a href="{% url 'settings_page' %}" class="nav-link">← Back to Settings</a>
+    </p>
+</div>
+{% endblock %}
