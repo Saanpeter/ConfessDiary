@@ -12,10 +12,9 @@
 
     <div style="text-align:center;margin:20px 0;">
         {% if user.profile_picture %}
-        <img src="{{ user.profile_picture.url }}" alt="Profile picture"
-             style="width:90px;height:90px;border-radius:50%;object-fit:cover;box-shadow:0 2px 8px rgba(0,0,0,0.2);">
+        <img src="{{ user.profile_picture.url }}" alt="Profile picture" class="profile-picture-preview">
         {% else %}
-        <span class="avatar-badge" style="width:90px;height:90px;font-size:2.2rem;">🎭</span>
+        <span class="avatar-badge profile-picture-preview">🎭</span>
         {% endif %}
     </div>
 

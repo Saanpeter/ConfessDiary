@@ -19,7 +19,7 @@
         </div>
 
         <!-- LEFT: Sidebar -->
-        <aside class="sidebar">
+        <aside class="sidebar" id="mainNav">
             <h1 class="brand">Whisperbook <span class="heart">♥</span></h1>
             <p class="tagline">Speak freely. Stay anonymous.</p>
 
@@ -46,7 +46,12 @@
         <!-- CENTER: Main feed -->
         <main class="feed">
             <header class="feed-header">
-                <div>
+                <button type="button" class="nav-toggle" id="navToggle" aria-label="Open navigation menu" aria-expanded="false" aria-controls="mainNav">
+                    <span class="nav-toggle-bar"></span>
+                    <span class="nav-toggle-bar"></span>
+                    <span class="nav-toggle-bar"></span>
+                </button>
+                <div class="feed-header-title">
                     <h2 class="page-title">{% block page_title %}Confess Diary{% endblock %}</h2>
                     <p class="page-subtitle">{% block page_subtitle %}Speak Freely. Stay Anonymous.{% endblock %}</p>
                 </div>
@@ -57,8 +62,7 @@
                 </div>
                 <div class="greeting">
                     {% if user.is_authenticated and user.profile_picture %}
-                    <img src="{{ user.profile_picture.url }}" alt=""
-                         style="width:28px;height:28px;border-radius:50%;object-fit:cover;">
+                    <img src="{{ user.profile_picture.url }}" alt="" class="avatar-inline">
                     {% else %}
                     <span class="avatar-badge">🎭</span>
                     {% endif %}
@@ -96,6 +100,8 @@
         </aside>
     </div>
 
+    <div class="nav-overlay" id="navOverlay" aria-hidden="true"></div>
+
     <div class="upload-overlay" id="uploadOverlay">
         <div class="upload-box">
             <div class="upload-spinner"></div>
@@ -103,6 +109,62 @@
             <p class="upload-sub" id="uploadStatusSub">This can take a moment for photos and videos.</p>
         </div>
     </div>
+
+    <script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const navToggle = document.getElementById('navToggle');
+        const mainNav = document.getElementById('mainNav');
+        const navOverlay = document.getElementById('navOverlay');
+
+        if (navToggle && mainNav && navOverlay) {
+            function closeNav() {
+                mainNav.classList.remove('is-open');
+                navToggle.classList.remove('is-active');
+                navToggle.setAttribute('aria-expanded', 'false');
+                navToggle.setAttribute('aria-label', 'Open navigation menu');
+                navOverlay.classList.remove('is-visible');
+                navOverlay.setAttribute('aria-hidden', 'true');
+                document.body.classList.remove('nav-open');
+            }
+
+            function openNav() {
+                mainNav.classList.add('is-open');
+                navToggle.classList.add('is-active');
+                navToggle.setAttribute('aria-expanded', 'true');
+                navToggle.setAttribute('aria-label', 'Close navigation menu');
+                navOverlay.classList.add('is-visible');
+                navOverlay.setAttribute('aria-hidden', 'false');
+                document.body.classList.add('nav-open');
+            }
+
+            navToggle.addEventListener('click', function () {
+                if (mainNav.classList.contains('is-open')) {
+                    closeNav();
+                } else {
+                    openNav();
+                }
+            });
+
+            navOverlay.addEventListener('click', closeNav);
+
+            mainNav.querySelectorAll('.nav-link').forEach(function (link) {
+                link.addEventListener('click', closeNav);
+            });
+
+            window.addEventListener('resize', function () {
+                if (window.innerWidth > 992) {
+                    closeNav();
+                }
+            });
+
+            document.addEventListener('keydown', function (e) {
+                if (e.key === 'Escape' && mainNav.classList.contains('is-open')) {
+                    closeNav();
+                }
+            });
+        }
+    });
+    </script>
 
     <script>
     document.addEventListener('DOMContentLoaded', function () {

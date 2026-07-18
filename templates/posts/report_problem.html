@@ -8,8 +8,7 @@
     <p style="color:var(--ink-soft);">Tell us what's wrong — bug, abuse, or anything else.</p>
     <form method="post">
         {% csrf_token %}
-        <textarea name="message" placeholder="Describe the problem..." required
-                  style="width:100%;min-height:120px;font-family:'Kalam',cursive;padding:10px;border-radius:6px;border:1px solid #ddd;"></textarea>
+        <textarea name="message" placeholder="Describe the problem..." required class="report-textarea"></textarea>
         <br><br>
         <button type="submit" class="post-btn">Submit Report</button>
     </form>

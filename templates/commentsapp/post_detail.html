@@ -123,8 +123,7 @@
     {% csrf_token %}
 
     {% if comment.user.profile_picture %}
-    <img src="{{ comment.user.profile_picture.url }}" alt=""
-         style="width:24px;height:24px;border-radius:50%;object-fit:cover;flex-shrink:0;">
+    <img src="{{ comment.user.profile_picture.url }}" alt="" class="avatar-inline avatar-inline-small">
     {% else %}
     <span class="avatar-badge small">🎭</span>
     {% endif %}
@@ -132,8 +131,7 @@
     <div class="composer-main">
 
         <textarea name="text"
-                  placeholder="Add a comment..."
-                  style="min-height:44px;"></textarea>
+                  placeholder="Add a comment..."></textarea>
 
         <div class="composer-actions">
 
