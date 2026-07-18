@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+
+{% block page_title %}New Post{% endblock %}
+{% block page_subtitle %}Say what's on your mind.{% endblock %}
+
+{% block content %}
+<form method="post" action="{% url 'new_post' %}" enctype="multipart/form-data" class="composer">
+    {% csrf_token %}
+    <span class="avatar-badge">🎭</span>
+    <div class="composer-main">
+        <textarea name="content" placeholder="Share your thoughts anonymously..." required style="min-height:100px;"></textarea>
+        <div class="composer-actions">
+            <label>📷 Photo <input type="file" name="image" accept="image/*"></label>
+            <label>🎬 Video <input type="file" name="video" accept="video/*"></label>
+            <button type="submit" class="post-btn">Post</button>
+        </div>
+    </div>
+</form>
+{% endblock %}

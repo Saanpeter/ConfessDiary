@@ -1,0 +1,170 @@
+{% extends "base.html" %}
+
+{% block page_title %}Confession{% endblock %}
+{% block page_subtitle %}
+    {{ comments.count }} comment{{ comments.count|pluralize }}
+{% endblock %}
+
+{% block content %}
+
+<article class="post-card" style="margin-bottom:24px;">
+
+    {% if post.image %}
+        <div class="polaroid">
+            <img src="{{ post.image.url }}" alt="Post Image">
+        </div>
+
+    {% elif post.video %}
+        <div class="polaroid polaroid-video">
+            <video src="{{ post.video.url }}" controls></video>
+        </div>
+    {% endif %}
+
+    <div class="post-body">
+        <p class="post-text">{{ post.content }}</p>
+
+        <span class="post-time">
+            {{ post.created_at|timesince }} ago
+        </span>
+
+        <div class="post-actions">
+
+            <form method="post" action="{% url 'like_post' post.id %}" style="display:inline;">
+                {% csrf_token %}
+                <button type="submit" class="{% if user in post.likes.all %}liked{% endif %}">
+                    ♥ {{ post.likes.count }}
+                </button>
+            </form>
+
+            <span>💬 {{ comments.count }}</span>
+
+            <form method="post" action="{% url 'bookmark_post' post.id %}" style="display:inline;">
+                {% csrf_token %}
+                <button type="submit">🔖</button>
+            </form>
+
+            {% if user == post.author %}
+                <a href="{% url 'delete_post' post.id %}"
+                   style="color:#d9534f;text-decoration:none;">
+                    🗑️ Delete Post
+                </a>
+            {% endif %}
+
+        </div>
+    </div>
+
+</article>
+
+<div class="comment-thread">
+
+    {% for comment in comments %}
+
+    <div class="comment-item">
+
+        <span class="avatar-badge small">🎭</span>
+
+        <div class="comment-body">
+
+            <strong>{{ comment.user.username }}</strong>
+
+            <span class="comment-time">
+                {{ comment.created_at|timesince }} ago
+            </span>
+
+            {% if comment.text %}
+                <p class="comment-text">{{ comment.text }}</p>
+            {% endif %}
+
+            {% if comment.sticker %}
+                <img class="comment-sticker"
+                     src="{{ comment.sticker.url }}"
+                     alt="Sticker">
+            {% endif %}
+
+            {% if comment.gif_url %}
+                <img class="comment-sticker"
+                     src="{{ comment.gif_url }}"
+                     alt="GIF">
+            {% endif %}
+
+            {% if user == comment.user %}
+                <form method="post"
+                      action="{% url 'delete_comment' comment.id %}"
+                      style="margin-top:4px;">
+                    {% csrf_token %}
+                    <button type="submit"
+                            style="background:none;border:none;color:#d9534f;font-family:'Kalam',cursive;font-size:0.8rem;cursor:pointer;">
+                        🗑️ Delete
+                    </button>
+                </form>
+            {% endif %}
+
+        </div>
+
+    </div>
+
+    {% empty %}
+
+    <div class="placeholder-card">
+        <p>No comments yet. Be the first to comment!</p>
+    </div>
+
+    {% endfor %}
+
+</div>
+
+{% if user.is_authenticated %}
+
+<form method="post"
+      action="{% url 'add_comment' post.id %}"
+      enctype="multipart/form-data"
+      class="composer">
+
+    {% csrf_token %}
+
+    <span class="avatar-badge">🎭</span>
+
+    <div class="composer-main">
+
+        <textarea name="text"
+                  placeholder="Add a comment..."
+                  style="min-height:44px;"></textarea>
+
+        <div class="composer-actions">
+
+            <label>
+                😊 Sticker
+                <input type="file"
+                       name="sticker"
+                       accept="image/*">
+            </label>
+
+            <input type="url"
+                   name="gif_url"
+                   placeholder="Paste GIF URL (optional)"
+                   style="font-family:'Kalam',cursive;padding:6px 10px;border-radius:12px;border:1px solid #ddd;">
+
+            <button type="submit" class="post-btn">
+                Comment
+            </button>
+
+        </div>
+
+    </div>
+
+</form>
+
+{% else %}
+
+<div class="placeholder-card">
+    <p>
+        <a href="{% url 'account_login' %}?next={{ request.path }}">
+            Sign in
+        </a>
+        to leave a comment.
+    </p>
+</div>
+
+{% endif %}
+
+{% endblock %}

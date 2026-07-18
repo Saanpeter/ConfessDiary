@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+
+{% block page_title %}{{ page_heading }}{% endblock %}
+{% block page_subtitle %}{{ page_subtext }}{% endblock %}
+
+{% block content %}
+{% if posts %}
+<div class="post-list">
+    {% for post in posts %}
+    <article class="post-card">
+        {% if post.image %}
+        <div class="polaroid"><img src="{{ post.image.url }}" alt=""></div>
+        {% endif %}
+        <div class="post-body">
+            <p class="post-text">{{ post.content }}</p>
+            <span class="post-time">{{ post.created_at|timesince }} ago</span>
+        </div>
+    </article>
+    {% endfor %}
+</div>
+{% else %}
+<div class="placeholder-card">
+    <h2>{{ page_heading }}</h2>
+    <p>{{ page_message }}</p>
+</div>
+{% endif %}
+{% endblock %}

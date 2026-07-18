@@ -1,0 +1,60 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="post-list">
+    {% for post in posts %}
+    <article class="post-card">
+        {% if post.image %}
+        <div class="polaroid">
+            <img src="{{ post.image.url }}" alt="">
+        </div>
+        {% elif post.video %}
+        <div class="polaroid polaroid-video">
+            <video src="{{ post.video.url }}"></video>
+            <span class="play-icon">▶</span>
+        </div>
+        {% endif %}
+
+        <div class="post-body">
+            <p class="post-text">{{ post.content }}</p>
+            <span class="post-time">{{ post.created_at|timesince }} ago</span>
+
+            <div class="post-actions">
+                <form method="post" action="{% url 'like_post' post.id %}" style="display:inline;">
+                    {% csrf_token %}
+                    <button type="submit" class="{% if user in post.likes.all %}liked{% endif %}">
+                        ♥ {{ post.likes.count }}
+                    </button>
+                </form>
+                <span>💬 {{ post.comments.count }}</span>
+                <form method="post" action="{% url 'bookmark_post' post.id %}" style="display:inline;">
+                    {% csrf_token %}
+                    <button type="submit">🔖</button>
+                </form>
+                <a href="{% url 'post_detail' post.id %}" class="view-comments">View {{ post.comments.count }} comments</a>
+                 {% if user == post.author %}
+                <a href="{% url 'delete_post' post.id %}" style="color:#d9534f;text-decoration:none;">🗑️</a>
+                {% endif %}
+        </div>
+    </article>
+    {% empty %}
+    <div class="empty-state">
+        <p>No confessions yet. Be the first to share something. ✏️</p>
+    </div>
+    {% endfor %}
+</div>
+
+<form method="post" action="{% url 'new_post' %}" enctype="multipart/form-data" class="composer">
+    {% csrf_token %}
+    <span class="avatar-badge">🎭</span>
+    <div class="composer-main">
+        <textarea name="content" placeholder="Share your thoughts anonymously..." required></textarea>
+        <div class="composer-actions">
+            <label>Aa Text</label>
+            <label>📷 Photo <input type="file" name="image" accept="image/*"></label>
+            <label>🎬 Video <input type="file" name="video" accept="video/*"></label>
+            <button type="submit" class="post-btn">Post</button>
+        </div>
+    </div>
+</form>
+{% endblock %}

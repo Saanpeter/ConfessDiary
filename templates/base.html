@@ -1,0 +1,94 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Whisperbook{% endblock %}</title>
+    <link href="https://fonts.googleapis.com/css2?family=Patrick+Hand&family=Caveat:wght@600;700&family=Kalam:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'css/notebook.css' %}">
+</head>
+<body>
+    <div class="page">
+
+        <!-- Spiral binder rail -->
+        <div class="spiral-rail">
+            {% for i in "12345678910111213141516" %}
+            <div class="spiral-ring"></div>
+            {% endfor %}
+        </div>
+
+        <!-- LEFT: Sidebar -->
+        <aside class="sidebar">
+            <h1 class="brand">Whisperbook <span class="heart">♥</span></h1>
+            <p class="tagline">Speak freely. Stay anonymous.</p>
+
+            <nav class="nav-links">
+                <a href="{% url 'home' %}" class="nav-link {% if request.resolver_match.url_name == 'home' %}active{% endif %}">🏠 Home</a>
+                <a href="{% url 'all_posts' %}" class="nav-link {% if request.resolver_match.url_name == 'all_posts' %}active{% endif %}">📰 All Posts</a>
+                <a href="{% url 'new_post' %}" class="nav-link {% if request.resolver_match.url_name == 'new_post' %}active{% endif %}">✏️ New Post</a>
+                <a href="{% url 'my_likes' %}" class="nav-link {% if request.resolver_match.url_name == 'my_likes' %}active{% endif %}">♡ My Likes</a>
+                <a href="{% url 'bookmarks' %}" class="nav-link {% if request.resolver_match.url_name == 'bookmarks' %}active{% endif %}">🔖 Bookmarks</a>
+                <a href="{% url 'profile' %}" class="nav-link {% if request.resolver_match.url_name == 'profile' %}active{% endif %}">👤 Profile</a>
+                <a href="{% url 'settings_page' %}" class="nav-link {% if request.resolver_match.url_name == 'settings_page' %}active{% endif %}">⚙️ Settings</a>
+                {% if user.is_authenticated %}
+                <a href="{% url 'account_logout' %}" class="nav-link logout">⏻ Logout</a>
+                {% else %}
+                <a href="{% url 'account_login' %}" class="nav-link logout">⏻ Login</a>
+                {% endif %}
+            </nav>
+
+            <div class="sticky-note">
+                <p>Be kind.<br>Be real.<br>Be you. ♡</p>
+            </div>
+        </aside>
+
+        <!-- CENTER: Main feed -->
+        <main class="feed">
+            <header class="feed-header">
+                <div>
+                    <h2 class="page-title">{% block page_title %}Confess Diary{% endblock %}</h2>
+                    <p class="page-subtitle">{% block page_subtitle %}Speak Freely. Stay Anonymous.{% endblock %}</p>
+                </div>
+                <div class="search-box">
+                    <form method="get" action="{% url 'all_posts' %}">
+                        <input type="text" name="q" placeholder="Search confessions..." value="{{ request.GET.q }}">
+                    </form>
+                </div>
+                <div class="greeting">
+                    <span class="avatar-badge">🎭</span>
+                    {% if user.is_authenticated %}
+                        Hey, {{ user.username|default:"Stranger" }}!
+                    {% else %}
+                        Hey, Stranger!
+                    {% endif %}
+                </div>
+            </header>
+
+            {% block content %}{% endblock %}
+        </main>
+
+        <!-- RIGHT: Notes column -->
+        <aside class="notes-column">
+            <div class="note note-yellow">
+                <strong>🔔 Notifications</strong>
+                <p>New comment on your post <span class="time">5m ago</span></p>
+                <p>Someone liked your post <span class="time">15m ago</span></p>
+                <p>Your post is trending! <span class="time">1h ago</span></p>
+            </div>
+
+            <div class="note note-blue">
+                <strong>⭐ Popular Tags</strong>
+                <p>#Life &nbsp; #Love &nbsp; #Thoughts</p>
+                <p>#Pain &nbsp; #Friends &nbsp; #College</p>
+            </div>
+
+            <div class="note note-pink">
+                <strong>👑 Top Contributors</strong>
+                <p>Anonymous_123 — 45 posts</p>
+                <p>MysterySoul — 38 posts</p>
+            </div>
+        </aside>
+    </div>
+</body>
+</html>
