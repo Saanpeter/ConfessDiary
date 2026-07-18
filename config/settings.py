@@ -14,7 +14,15 @@ SECRET_KEY = 'django-insecure-0!a_t=sahftj+3ge2d%j8d$z1l7+7u-c$ht=pja08++u72c-h2
 
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = [
+    "localhost",
+    "127.0.0.1",
+    ".vercel.app",
+    "confess-diary-six.vercel.app",
+]
+CSRF_TRUSTED_ORIGINS = [
+    "https://confess-diary-six.vercel.app",
+]
 
 # ----------------------------------------------------
 # Installed Applications
