@@ -1,3 +1,4 @@
+{% load comment_tags %}
 <div class="comment-item{% if depth > 0 %} comment-reply{% endif %} comment-depth-{{ depth }}">
     <span class="avatar-badge small">🎭</span>
     <div class="comment-body">
@@ -41,7 +42,7 @@
         {% if comment.replies.all %}
             <div class="comment-replies">
                 {% for reply in comment.replies.all %}
-                    {% render_comment reply depth=depth|add:1 %}
+                    {% render_comment reply depth|add:1 %}
                 {% endfor %}
             </div>
         {% endif %}
