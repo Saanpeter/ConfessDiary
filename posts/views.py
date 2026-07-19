@@ -117,28 +117,24 @@ def bookmark_post(request, post_id):
         bookmark.delete()
     return redirect(request.META.get('HTTP_REFERER', 'home'))
 
-
 @login_required
 def edit_post(request, post_id):
-    post = get_object_or_404(Post, id=post_id, author=request.user)
+    post = get_object_or_404(Post, id=post_id)
+
+    if post.author != request.user:
+        messages.error(request, "You can only edit your own posts.")
+        return redirect('post_detail', post_id=post.id)
+
     if request.method == 'POST':
         form = EditPostForm(request.POST, request.FILES, instance=post)
         if form.is_valid():
-            edited_post = form.save(commit=False)
-            if form.cleaned_data.get('remove_image'):
-                edited_post.image.delete(save=False)
-                edited_post.image = None
-            if form.cleaned_data.get('remove_video'):
-                edited_post.video.delete(save=False)
-                edited_post.video = None
-            edited_post.save()
-            messages.success(request, 'Your confession has been updated.')
+            form.save()
+            messages.success(request, "Post updated.")
             return redirect('post_detail', post_id=post.id)
     else:
         form = EditPostForm(instance=post)
+
     return render(request, 'posts/edit_post.html', {'form': form, 'post': post})
-
-
 @login_required
 def set_theme_preference(request):
     if request.method != 'POST':
