@@ -50,7 +50,7 @@
                 {% else %}
                 <a href="{% url 'account_login' %}" class="nav-link logout">⏻ Login</a>
                 {% endif %}
-               <button id="themeToggle" type="button" class="nav-link theme-toggle" aria-pressed="false" {% if user.is_authenticated %}data-sync-url="{% url 'set_theme_preference' %}"{% endif %}>🌙 Dark mode</button>
+               <button id="themeToggle" type="button" class="nav-link theme-toggle" aria-pressed="false">🌙 Dark mode</button>
             </nav>
  
             <div class="sticky-note">
