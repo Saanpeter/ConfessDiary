@@ -1,5 +1,10 @@
-DB_PASSWORD=735698.Sa
-CLOUDINARY_CLOUD_NAME=oc4aumpg
-CLOUDINARY_API_KEY=861432643681949
-CLOUDINARY_API_SECRET=e8JC1N9-4cXbwikp5bofM8clrVU
-SECRET_KEY=django-insecure-0!a_t=sahftj+3ge2d%j8d$z1l7+7u-c$ht=pja08++u72c-h2
+﻿.env
+*.pyc
+__pycache__/
+db.sqlite3
+/staticfiles/
+/media/
+.env.example
+.env.local
+.env.*.local
+.DS_Store
