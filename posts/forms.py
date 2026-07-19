@@ -23,3 +23,15 @@ class EditPostForm(forms.ModelForm):
         if cleaned_data.get('remove_video') and cleaned_data.get('video'):
             self.add_error('video', 'You cannot upload a new video and remove the current one at the same time.')
         return cleaned_data
+
+    def save(self, commit=True):
+        post = super().save(commit=False)
+
+        if self.cleaned_data.get('remove_image'):
+            post.image = None
+        if self.cleaned_data.get('remove_video'):
+            post.video = None
+
+        if commit:
+            post.save()
+        return post

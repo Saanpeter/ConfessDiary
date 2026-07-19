@@ -8,9 +8,12 @@
     <h2 class="page-title">Edit Confession</h2>
     <p class="auth-subtext">Update the text, replace media, or remove what you no longer want shown.</p>
 
+    {% if form.non_field_errors %}
+        <div class="auth-error">{{ form.non_field_errors }}</div>
+    {% endif %}
+
     <form method="post" enctype="multipart/form-data" class="auth-form">
         {% csrf_token %}
-        {{ form.non_field_errors }}
 
         <label for="id_content">Text</label>
         {{ form.content }}
@@ -19,26 +22,26 @@
         {% if post.image %}
         <label>Current photo</label>
         <div class="polaroid"><img src="{{ post.image.url }}" alt="Current photo"></div>
+        <label class="remember">
+            {{ form.remove_image }} Remove this photo
+        </label>
         {% endif %}
+
+        <label for="id_image">{% if post.image %}Replace photo{% else %}Add a photo{% endif %}</label>
+        {{ form.image }}
+        {{ form.image.errors }}
 
         {% if post.video %}
         <label>Current video</label>
         <div class="polaroid polaroid-video"><video src="{{ post.video.url }}" controls></video></div>
+        <label class="remember">
+            {{ form.remove_video }} Remove this video
+        </label>
         {% endif %}
 
-        <label for="id_image">Replace photo</label>
-        {{ form.image }}
-        {{ form.image.errors }}
-
-        <label for="id_remove_image">Remove photo</label>
-        {{ form.remove_image }}
-
-        <label for="id_video">Replace video</label>
+        <label for="id_video">{% if post.video %}Replace video{% else %}Add a video{% endif %}</label>
         {{ form.video }}
         {{ form.video.errors }}
-
-        <label for="id_remove_video">Remove video</label>
-        {{ form.remove_video }}
 
         <button type="submit" class="post-btn auth-submit">Save Changes</button>
     </form>

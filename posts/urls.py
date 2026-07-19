@@ -1,5 +1,6 @@
 ﻿from django.urls import path
 from . import views
+from django.urls import get_resolver
 
 urlpatterns = [
     path('', views.home, name='home'),
@@ -24,4 +25,5 @@ urlpatterns = [
     path('help/', views.help_page, name='help_page'),
     path('about/', views.about_page, name='about_page'),
     path('posts/<int:post_id>/delete/', views.delete_post, name='delete_post'),
+    path('posts/<int:post_id>/edit/', views.edit_post, name='edit_post'),
 ]
