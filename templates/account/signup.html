@@ -1,7 +1,8 @@
 {% extends "base.html" %}
 {% load allauth %}
+{% load socialaccount %}
 
-{% block title %}Sign Up — Whisperbook{% endblock %}
+{% block title %}Sign Up - Whisperbook{% endblock %}
 
 {% block content %}
 <div class="auth-card">
@@ -18,13 +19,22 @@
         {% csrf_token %}
 
         <label for="id_email">Email</label>
-        <input type="email" name="email" id="id_email" placeholder="Email address" autofocus>
+        <input type="email" name="email" id="id_email" placeholder="Email address" value="{{ form.email.value|default_if_none:'' }}" autofocus>
+        {% if form.email.errors %}
+            <div class="auth-error">{{ form.email.errors|striptags }}</div>
+        {% endif %}
 
         <label for="id_password1">Password</label>
         <input type="password" name="password1" id="id_password1" placeholder="Password">
+        {% if form.password1.errors %}
+            <div class="auth-error">{{ form.password1.errors|striptags }}</div>
+        {% endif %}
 
         <label for="id_password2">Confirm password</label>
         <input type="password" name="password2" id="id_password2" placeholder="Confirm password">
+        {% if form.password2.errors %}
+            <div class="auth-error">{{ form.password2.errors|striptags }}</div>
+        {% endif %}
 
         <button type="submit" class="post-btn auth-submit">Create Account</button>
     </form>

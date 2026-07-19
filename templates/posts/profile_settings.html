@@ -1,32 +1,48 @@
 {% extends "base.html" %}
 
 {% block page_title %}Profile Settings{% endblock %}
-{% block page_subtitle %}Settings{% endblock %}
+{% block page_subtitle %}Update your public details{% endblock %}
 
 {% block content %}
-<div class="placeholder-card" style="text-align:left;">
-    <h2 style="text-align:center;">Profile Picture</h2>
-    <p style="text-align:center;color:var(--ink-soft);font-size:0.85rem;">
-        This is only visible on your comments — your posts stay fully anonymous.
-    </p>
+<div class="auth-card">
+    <h2 class="page-title">Profile Settings</h2>
+    <p class="auth-subtext">Update your username, email, bio, website, location, and profile photo.</p>
 
-    <div style="text-align:center;margin:20px 0;">
-        {% if user.profile_picture %}
-        <img src="{{ user.profile_picture.url }}" alt="Profile picture" class="profile-picture-preview">
-        {% else %}
-        <span class="avatar-badge profile-picture-preview">🎭</span>
-        {% endif %}
-    </div>
-
-    <form method="post" enctype="multipart/form-data" style="text-align:center;">
+    <form method="post" enctype="multipart/form-data" class="auth-form">
         {% csrf_token %}
-        <input type="file" name="profile_picture" accept="image/*" style="font-family:'Kalam',cursive;">
-        <br><br>
-        <button type="submit" class="post-btn">Upload</button>
+        {% if form.non_field_errors %}
+            <div class="auth-error">{{ form.non_field_errors }}</div>
+        {% endif %}
+
+        <label for="id_username">Username</label>
+        {{ form.username }}
+        {{ form.username.errors }}
+
+        <label for="id_email">Email</label>
+        {{ form.email }}
+        {{ form.email.errors }}
+
+        <label for="id_bio">Bio</label>
+        {{ form.bio }}
+        {{ form.bio.errors }}
+
+        <label for="id_website">Website</label>
+        {{ form.website }}
+        {{ form.website.errors }}
+
+        <label for="id_location">Location</label>
+        {{ form.location }}
+        {{ form.location.errors }}
+
+        <label for="id_profile_picture">Profile picture</label>
+        {{ form.profile_picture }}
+        {{ form.profile_picture.errors }}
+
+        <button type="submit" class="post-btn auth-submit">Save Profile</button>
     </form>
 
-    <p style="text-align:center;margin-top:20px;">
-        <a href="{% url 'settings_page' %}" class="nav-link">← Back to Settings</a>
+    <p class="auth-subtext" style="margin-top: 18px;">
+        <a href="{% url 'settings_page' %}">← Back to Settings</a>
     </p>
 </div>
 {% endblock %}

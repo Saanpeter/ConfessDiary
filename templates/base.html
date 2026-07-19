@@ -5,6 +5,20 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{% block title %}Whisperbook{% endblock %}</title>
+    <script>
+    (function() {
+        var savedTheme = localStorage.getItem('theme');
+        var serverTheme = null;
+        {% if user.is_authenticated %}
+            serverTheme = '{{ user_settings.dark_mode|yesno:"dark,light" }}';
+        {% endif %}
+        var theme = savedTheme || serverTheme || 'light';
+        if (theme !== 'dark') {
+            theme = 'light';
+        }
+        document.documentElement.setAttribute('data-theme', theme);
+    })();
+    </script>
     <link href="https://fonts.googleapis.com/css2?family=Patrick+Hand&family=Caveat:wght@600;700&family=Kalam:wght@400;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="{% static 'css/notebook.css' %}">
 </head>
@@ -36,8 +50,9 @@
                 {% else %}
                 <a href="{% url 'account_login' %}" class="nav-link logout">⏻ Login</a>
                 {% endif %}
+               <button id="themeToggle" type="button" class="nav-link theme-toggle" aria-pressed="false" {% if user.is_authenticated %}data-sync-url="{% url 'set_theme_preference' %}"{% endif %}>🌙 Dark mode</button>
             </nav>
-
+ 
             <div class="sticky-note">
                 <p>Be kind.<br>Be real.<br>Be you. ♡</p>
             </div>
@@ -258,6 +273,48 @@
                 preview.classList.remove('active');
                 thumbSlot.innerHTML = '';
             });
+        });
+    });
+    </script>
+    <script>
+    document.addEventListener('DOMContentLoaded', function () {
+        var themeToggle = document.getElementById('themeToggle');
+        if (!themeToggle) { return; }
+
+        function getCurrentTheme() {
+            return document.documentElement.getAttribute('data-theme') === 'dark' ? 'dark' : 'light';
+        }
+
+        function renderThemeButton(theme) {
+            themeToggle.textContent = theme === 'dark' ? '☀️ Light mode' : '🌙 Dark mode';
+            themeToggle.setAttribute('aria-pressed', theme === 'dark');
+        }
+
+        function saveTheme(theme) {
+            localStorage.setItem('theme', theme);
+            if (themeToggle.dataset.syncUrl) {
+                fetch(themeToggle.dataset.syncUrl, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                        'X-Requested-With': 'XMLHttpRequest',
+                    },
+                    body: 'theme=' + theme,
+                    credentials: 'same-origin',
+                });
+            }
+        }
+
+        function setTheme(theme) {
+            document.documentElement.setAttribute('data-theme', theme);
+            saveTheme(theme);
+            renderThemeButton(theme);
+        }
+
+        renderThemeButton(getCurrentTheme());
+
+        themeToggle.addEventListener('click', function () {
+            setTheme(getCurrentTheme() === 'dark' ? 'light' : 'dark');
         });
     });
     </script>

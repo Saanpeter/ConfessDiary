@@ -13,6 +13,13 @@ class Comment(models.Model):
         settings.AUTH_USER_MODEL,
         on_delete=models.CASCADE
     )
+    parent = models.ForeignKey(
+        'self',
+        on_delete=models.CASCADE,
+        null=True,
+        blank=True,
+        related_name='replies'
+    )
     text = models.TextField(blank=True)
     sticker = models.ImageField(
         upload_to='stickers/',

@@ -1,0 +1,53 @@
+{% extends "base.html" %}
+
+{% block page_title %}Trending Confessions{% endblock %}
+{% block page_subtitle %}The hottest and most active posts right now.{% endblock %}
+
+{% block content %}
+<div class="sort-bar">
+    <a href="{% url 'trending' %}?sort=hot" class="sort-pill {% if active_sort == 'hot' %}active{% endif %}">Hot</a>
+    <a href="{% url 'trending' %}?sort=top" class="sort-pill {% if active_sort == 'top' %}active{% endif %}">Top</a>
+    <a href="{% url 'trending' %}?sort=new" class="sort-pill {% if active_sort == 'new' %}active{% endif %}">Newest</a>
+</div>
+
+<div class="post-list">
+    {% for post in posts %}
+    <article class="post-card">
+        {% if post.image %}
+        <div class="polaroid">
+            <img src="{{ post.image.url }}" alt="">
+        </div>
+        {% elif post.video %}
+        <div class="polaroid polaroid-video">
+            <video src="{{ post.video.url }}"></video>
+            <span class="play-icon">▶</span>
+        </div>
+        {% endif %}
+
+        <div class="post-body">
+            <p class="post-text">{{ post.content }}</p>
+            <span class="post-time">{{ post.created_at|timesince }} ago</span>
+
+            {% if post.hot_score is not None %}
+            <div class="hot-score">Hot score: {{ post.hot_score|floatformat:1 }}</div>
+            {% endif %}
+
+            <div class="post-actions">
+                <form method="post" action="{% url 'like_post' post.id %}" style="display:inline;">
+                    {% csrf_token %}
+                    <button type="submit" class="{% if user in post.likes.all %}liked{% endif %}">♥ {{ post.likes.count }}</button>
+                </form>
+                <span>💬 {{ post.comments.count }}</span>
+                <form method="post" action="{% url 'bookmark_post' post.id %}" style="display:inline;">
+                    {% csrf_token %}
+                    <button type="submit">🔖</button>
+                </form>
+                <a href="{% url 'post_detail' post.id %}" class="view-comments">View</a>
+            </div>
+        </div>
+    </article>
+    {% empty %}
+    <div class="empty-state"><p>No hot confessions right now. Check back soon.</p></div>
+    {% endfor %}
+</div>
+{% endblock %}

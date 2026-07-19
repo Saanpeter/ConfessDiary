@@ -1,23 +1,80 @@
 # posts/views.py
 
+from datetime import timedelta
+
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
+from django.contrib.auth import get_user_model
+from django.db.models import Count
+from django.http import JsonResponse, HttpResponseNotAllowed
+from django.utils import timezone
+
 from .models import Post, Bookmark
-from accounts.models import UserSettings, Report
+from .forms import EditPostForm
+from accounts.forms import ProfileEditForm
+from accounts.models import Follow, UserSettings, Report, BlockedUser
+
+
+def _get_or_create_settings(user):
+    settings_obj, created = UserSettings.objects.get_or_create(user=user)
+    return settings_obj
+
+
+def _exclude_hidden_posts(request, queryset):
+    if not request.user.is_authenticated:
+        return queryset
+    hidden_user_ids = request.user.blocked_users.values_list('blocked_user_id', flat=True)
+    return queryset.exclude(author_id__in=hidden_user_ids)
+
+
+def _post_hot_score(post):
+    age_hours = max((timezone.now() - post.created_at).total_seconds() / 3600.0, 0.1)
+    likes = getattr(post, 'likes_count', post.likes.count())
+    comments = getattr(post, 'comments_count', post.comments.count())
+    decay = 0.5
+    return (likes * 3) + (comments * 2) - (age_hours * decay)
+
+
+def _visible_comments(request, post):
+    if not request.user.is_authenticated:
+        return post.comments.filter(parent__isnull=True).select_related('user').prefetch_related('replies')
+    hidden_user_ids = request.user.blocked_users.values_list('blocked_user_id', flat=True)
+    return post.comments.filter(parent__isnull=True).exclude(user_id__in=hidden_user_ids).select_related('user').prefetch_related('replies')
 
 
 def home(request):
-    posts = Post.objects.all().order_by('-created_at')[:20]
+    posts = _exclude_hidden_posts(request, Post.objects.filter(is_archived=False)).order_by('-created_at')[:20]
     return render(request, 'posts/home.html', {'posts': posts})
 
 
 def all_posts(request):
-    posts = Post.objects.all().order_by('-created_at')
+    posts = _exclude_hidden_posts(request, Post.objects.filter(is_archived=False)).order_by('-created_at')
     q = request.GET.get('q')
     if q:
         posts = posts.filter(content__icontains=q)
     return render(request, 'posts/all_posts.html', {'posts': posts})
+
+
+def trending(request):
+    posts = _exclude_hidden_posts(request, Post.objects.filter(is_archived=False)).annotate(
+        likes_count=Count('likes', distinct=True),
+        comments_count=Count('comments', distinct=True),
+    )
+    sort = request.GET.get('sort', 'hot')
+    if sort == 'new':
+        posts = posts.order_by('-created_at')
+    elif sort == 'top':
+        posts = posts.order_by('-likes_count', '-comments_count', '-created_at')
+    else:
+        posts = list(posts)
+        for post in posts:
+            post.hot_score = _post_hot_score(post)
+        posts.sort(key=lambda item: item.hot_score, reverse=True)
+    return render(request, 'posts/trending.html', {
+        'posts': posts,
+        'active_sort': sort,
+    })
 
 
 @login_required
@@ -62,6 +119,113 @@ def bookmark_post(request, post_id):
 
 
 @login_required
+def edit_post(request, post_id):
+    post = get_object_or_404(Post, id=post_id, author=request.user)
+    if request.method == 'POST':
+        form = EditPostForm(request.POST, request.FILES, instance=post)
+        if form.is_valid():
+            edited_post = form.save(commit=False)
+            if form.cleaned_data.get('remove_image'):
+                edited_post.image.delete(save=False)
+                edited_post.image = None
+            if form.cleaned_data.get('remove_video'):
+                edited_post.video.delete(save=False)
+                edited_post.video = None
+            edited_post.save()
+            messages.success(request, 'Your confession has been updated.')
+            return redirect('post_detail', post_id=post.id)
+    else:
+        form = EditPostForm(instance=post)
+    return render(request, 'posts/edit_post.html', {'form': form, 'post': post})
+
+
+@login_required
+def set_theme_preference(request):
+    if request.method != 'POST':
+        return HttpResponseNotAllowed(['POST'])
+    theme = request.POST.get('theme')
+    if theme not in ['light', 'dark']:
+        return JsonResponse({'error': 'Invalid theme'}, status=400)
+    settings_obj = _get_or_create_settings(request.user)
+    settings_obj.dark_mode = theme == 'dark'
+    settings_obj.save()
+    return JsonResponse({'theme': theme})
+
+
+@login_required
+def block_user(request, user_id):
+    User = get_user_model()
+    target = get_object_or_404(User, id=user_id)
+    if target == request.user:
+        messages.error(request, 'You cannot block yourself.')
+        return redirect(request.META.get('HTTP_REFERER', 'home'))
+
+    BlockedUser.objects.update_or_create(
+        user=request.user,
+        blocked_user=target,
+        defaults={'is_muted': False},
+    )
+    messages.success(request, f'You have blocked {target.username}.')
+    return redirect(request.META.get('HTTP_REFERER', 'home'))
+
+
+@login_required
+def mute_user(request, user_id):
+    User = get_user_model()
+    target = get_object_or_404(User, id=user_id)
+    if target == request.user:
+        messages.error(request, 'You cannot mute yourself.')
+        return redirect(request.META.get('HTTP_REFERER', 'home'))
+
+    BlockedUser.objects.update_or_create(
+        user=request.user,
+        blocked_user=target,
+        defaults={'is_muted': True},
+    )
+    messages.success(request, f'You have muted {target.username}.')
+    return redirect(request.META.get('HTTP_REFERER', 'home'))
+
+
+@login_required
+def unblock_user(request, user_id):
+    User = get_user_model()
+    target = get_object_or_404(User, id=user_id)
+    BlockedUser.objects.filter(user=request.user, blocked_user=target).delete()
+    messages.success(request, f'You have unblocked {target.username}.')
+    return redirect(request.META.get('HTTP_REFERER', 'home'))
+
+
+@login_required
+def unmute_user(request, user_id):
+    User = get_user_model()
+    target = get_object_or_404(User, id=user_id)
+    BlockedUser.objects.filter(user=request.user, blocked_user=target, is_muted=True).delete()
+    messages.success(request, f'You have unmuted {target.username}.')
+    return redirect(request.META.get('HTTP_REFERER', 'home'))
+
+
+@login_required
+def follow_user(request, user_id):
+    User = get_user_model()
+    target = get_object_or_404(User, id=user_id)
+    if target == request.user:
+        messages.error(request, 'You cannot follow yourself.')
+        return redirect(request.META.get('HTTP_REFERER', 'home'))
+    Follow.objects.get_or_create(follower=request.user, following=target)
+    messages.success(request, f'You are now following {target.username}.')
+    return redirect(request.META.get('HTTP_REFERER', 'home'))
+
+
+@login_required
+def unfollow_user(request, user_id):
+    User = get_user_model()
+    target = get_object_or_404(User, id=user_id)
+    Follow.objects.filter(follower=request.user, following=target).delete()
+    messages.success(request, f'You have unfollowed {target.username}.')
+    return redirect(request.META.get('HTTP_REFERER', 'home'))
+
+
+@login_required
 def my_likes(request):
     posts = request.user.liked_posts.all().order_by('-created_at')
     return render(request, 'posts/placeholder.html', {
@@ -98,6 +262,24 @@ def profile(request):
     return render(request, 'posts/profile.html', {
         'posts': posts,
         'total_likes': total_likes,
+    })
+
+
+@login_required
+def profile_settings(request):
+    if request.method == 'POST':
+        form = ProfileEditForm(request.POST, request.FILES, instance=request.user)
+        if form.is_valid():
+            form.save()
+            messages.success(request, "Profile settings updated.")
+            return redirect('profile_settings')
+    else:
+        form = ProfileEditForm(instance=request.user)
+
+    settings_obj = _get_or_create_settings(request.user)
+    return render(request, 'posts/profile_settings.html', {
+        'form': form,
+        'settings_obj': settings_obj,
     })
 
 SETTINGS_SECTIONS = {
@@ -296,20 +478,7 @@ def about_page(request):
     return render(request, 'posts/about.html')
 
 @login_required
-def profile_settings(request):
-    if request.method == 'POST':
-        picture = request.FILES.get('profile_picture')
-        if picture:
-            request.user.profile_picture = picture
-            request.user.save()
-            messages.success(request, "Profile picture updated.")
-        return redirect('profile_settings')
-
-    return render(request, 'posts/profile_settings.html')
-
-@login_required
-def delete_post(request, post_id):
-    post = get_object_or_404(Post, id=post_id)
+def delete_post(request, post_id):    post = get_object_or_404(Post, id=post_id)
 
     if post.author != request.user:
         messages.error(request, "You can only delete your own posts.")
