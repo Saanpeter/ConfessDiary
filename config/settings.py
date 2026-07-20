@@ -199,8 +199,8 @@ SOCIALACCOUNT_PROVIDERS = {
 }
 
 
-ACCOUNT_ADAPTER = "accounts.adapters.NoSignupAccountAdapter"
-SOCIALACCOUNT_ADAPTER = "accounts.social_adapter.NoNewGoogleSignupAdapter"
+# ACCOUNT_ADAPTER = "accounts.adapters.NoSignupAccountAdapter"
+# SOCIALACCOUNT_ADAPTER = "accounts.social_adapter.NoNewGoogleSignupAdapter"
 # ----------------------------------------------------
 # Custom User Model
 # ----------------------------------------------------
