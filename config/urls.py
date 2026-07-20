@@ -20,15 +20,27 @@ from django.conf import settings
 from django.conf.urls.static import static
 from accounts.views import signup_disabled
 
+from django.shortcuts import redirect
+
+
+def password_reset_disabled(request):
+    return redirect("account_login")
+
+
 urlpatterns = [
     path('admin/', admin.site.urls),
 
+    path(
+        "accounts/password/reset/",
+        password_reset_disabled,
+        name="account_reset_password",
+    ),
+
     path('accounts/', include('allauth.urls')),
-    path("accounts/signup/", signup_disabled),
+
     path('', include('posts.urls')),
     path('', include('commentsapp.urls')),
 ]
-
 if settings.DEBUG:
     urlpatterns += static(
         settings.MEDIA_URL,
