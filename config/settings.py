@@ -78,7 +78,7 @@ INSTALLED_APPS = [
 
 SITE_ID = 1
 CLOUDINARY_STORAGE = {
-    'CLOUD_NAME': os.environ.get('CLOUDINARY_CLOUD_NAME', 'oc4aumpg'),
+    'CLOUD_NAME': os.environ.get('CLOUDINARY_CLOUD_NAME'),
     'API_KEY': os.environ.get('CLOUDINARY_API_KEY', '861432643681949'),
     'API_SECRET': os.environ.get('CLOUDINARY_API_SECRET', 'e8JC1N9-4cXbwikp5bofM8clrVU'),
 }
