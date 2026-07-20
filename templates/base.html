@@ -278,6 +278,51 @@
     </script>
     <script>
     document.addEventListener('DOMContentLoaded', function () {
+        const replyButtons = document.querySelectorAll('.comment-reply-button');
+        let currentOpenForm = null;
+
+        replyButtons.forEach(function (button) {
+            button.addEventListener('click', function () {
+                const commentId = button.getAttribute('data-comment-id');
+                const replyForm = document.getElementById('reply-form-' + commentId);
+
+                if (!replyForm) return;
+
+                // Close any currently open reply form
+                if (currentOpenForm && currentOpenForm !== replyForm) {
+                    currentOpenForm.style.display = 'none';
+                }
+
+                // Toggle the current reply form
+                // Toggle the current reply form
+                const isCurrentlyOpen = replyForm.style.display === 'flex';
+                replyForm.style.display = isCurrentlyOpen ? 'none' : 'flex';
+
+                // Update the reference to the current open form
+                currentOpenForm = isCurrentlyOpen ? null : replyForm;
+
+                // Auto-focus the textarea if opening
+                if (!isCurrentlyOpen) {
+                    const textarea = replyForm.querySelector('textarea');
+                    if (textarea) {
+                        textarea.focus();
+                    }
+                }
+            });
+        });
+
+        // Close reply form when pressing Escape
+        document.addEventListener('keydown', function (e) {
+            if (e.key === 'Escape' && currentOpenForm) {
+                currentOpenForm.style.display = 'none';
+                currentOpenForm = null;
+            }
+        });
+    });
+    </script>
+
+    <script>
+    document.addEventListener('DOMContentLoaded', function () {
         var themeToggle = document.getElementById('themeToggle');
         if (!themeToggle) { return; }
 
