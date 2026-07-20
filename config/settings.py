@@ -31,20 +31,13 @@ if not SECRET_KEY and not DEBUG:
 SECRET_KEY = SECRET_KEY or 'django-insecure-0!a_t=sahftj+3ge2d%j8d$z1l7+7u-c$ht=pja08++u72c-h2'
 
 ALLOWED_HOSTS = [
-    host.strip() for host in os.environ.get(
-        'ALLOWED_HOSTS',
-        'localhost,127.0.0.1,.vercel.app,confess-diary-six.vercel.app'
-    ).split(',')
-    if host.strip()
+    "localhost",
+    "127.0.0.1",
+    ".vercel.app",
 ]
 CSRF_TRUSTED_ORIGINS = [
-    origin.strip() for origin in os.environ.get(
-        'CSRF_TRUSTED_ORIGINS',
-        'https://confess-diary-six.vercel.app'
-    ).split(',')
-    if origin.strip()
+    "https://confess-diary-1k2yhjiuo-saan2.vercel.app",
 ]
-
 logger = logging.getLogger(__name__)
 
 # ----------------------------------------------------
