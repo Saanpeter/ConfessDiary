@@ -10,6 +10,7 @@ from pathlib import Path
 from urllib.parse import parse_qs, urlparse
 from django.core.exceptions import ImproperlyConfigured
 from dotenv import load_dotenv
+import dj_database_url
 
 load_dotenv()
 
@@ -36,6 +37,7 @@ ALLOWED_HOSTS = [
     ".vercel.app",
 ]
 CSRF_TRUSTED_ORIGINS = [
+    "https://confess-diary-six.vercel.app",
     "https://confess-diary-1k2yhjiuo-saan2.vercel.app",
 ]
 logger = logging.getLogger(__name__)
@@ -145,17 +147,11 @@ if DATABASE_URL:
     sslmode = query_params.get('sslmode', ['require'])[0]
 
     DATABASES = {
-        'default': {
-            'ENGINE': "django.db.backends.postgresql",
-            'NAME': os.environ.get("DB_NAME"),
-            'USER': os.environ.get("DB_USER"),
-            'PASSWORD': os.environ.get("DB_PASSWORD"),
-            'HOST': os.environ.get("DB_HOST"),
-            'PORT': os.environ.get("DB_PORT"),
-            'OPTIONS': {
-                "sslmode": "require",
-            },
-        }
+        "default": dj_database_url.config(
+            default=os.environ.get("DATABASE_URL"),
+            conn_max_age=600,
+            ssl_require=True,
+        )
     }
 else:
     if not DEBUG:
