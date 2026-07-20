@@ -1,6 +1,7 @@
 from django.db import models
 from django.conf import settings
 from cloudinary_storage.storage import VideoMediaCloudinaryStorage
+import uuid
 
 class Post(models.Model):
     author = models.ForeignKey(
@@ -19,6 +20,12 @@ class Post(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
     likes = models.ManyToManyField(settings.AUTH_USER_MODEL, related_name='liked_posts', blank=True)
     is_archived = models.BooleanField(default=False)
+    edit_token = models.UUIDField(
+        default=uuid.uuid4,
+        editable=False,
+        null=True,
+        blank=True
+    )
     
     def __str__(self):
         return f"{self.anonymous_name} - {self.created_at}"

@@ -77,7 +77,6 @@ def trending(request):
     })
 
 
-@login_required
 def new_post(request):
     if request.method == 'POST':
         content = request.POST.get('content', '').strip()
@@ -90,6 +89,7 @@ def new_post(request):
 
         Post.objects.create(
             author=request.user if request.user.is_authenticated else None,
+            anonymous_name="Anonymous",
             content=content,
             image=image,
             video=video,
