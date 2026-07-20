@@ -1,31 +1,28 @@
 {% extends "base.html" %}
+{% load socialaccount %}
 
-{% block title %}Sign Up - Whisperbook{% endblock %}
+{% block title %}Sign In - Whisperbook{% endblock %}
 
 {% block content %}
 
 <div class="auth-card">
 
-<h2 class="page-title">Create Account</h2>
+    <h2 class="page-title">Welcome to Whisperbook</h2>
 
-<form method="post" action="{% url 'account_signup' %}" class="auth-form">
+    <p class="auth-text">
+        Sign in with your Google account to continue.
+    </p>
 
-{% csrf_token %}
+    <a href="{% provider_login_url 'google' %}" class="google-btn">
+        Continue with Google
+    </a>
 
-{{ form.as_p }}
-
-<button type="submit" class="post-btn">
-    Sign Up
-</button>
-
-</form>
-
-<p>
-Already have an account?
-<a href="{% url 'account_login' %}">
-Sign In
-</a>
-</p>
+    <p>
+        Already signed in?
+        <a href="{% url 'account_login' %}">
+            Go to Login
+        </a>
+    </p>
 
 </div>
 
