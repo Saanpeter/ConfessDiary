@@ -179,12 +179,16 @@ else:
             'NAME': BASE_DIR / 'db.sqlite3',
         }
     }
-    
+
 # ----------------------------------------------------
 # Allauth Settings
 # ----------------------------------------------------
 
-
+ACCOUNT_LOGIN_METHODS = {'email'}
+ACCOUNT_SIGNUP_FIELDS = ['email*', 'password1*', 'password2*']
+ACCOUNT_EMAIL_VERIFICATION = 'mandatory'   # change to 'mandatory' later if you want email confirmation
+ACCOUNT_UNIQUE_EMAIL = True
+ACCOUNT_LOGOUT_ON_GET = True
 
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = 'smtp.resend.com'
@@ -193,6 +197,14 @@ EMAIL_USE_TLS = True
 EMAIL_HOST_USER = 'resend'
 EMAIL_HOST_PASSWORD = os.environ.get('RESEND_API_KEY')
 DEFAULT_FROM_EMAIL = 'Whisperbook <onboarding@resend.dev>'
+
+SOCIALACCOUNT_PROVIDERS = {
+    'google': {
+        'SCOPE': ['profile', 'email'],
+        'AUTH_PARAMS': {'access_type': 'online'},
+    }
+}
+
 # ----------------------------------------------------
 # Custom User Model
 # ----------------------------------------------------
