@@ -3,7 +3,11 @@ from django.conf import settings
 from cloudinary_storage.storage import VideoMediaCloudinaryStorage
 
 class Post(models.Model):
-    author = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    author = models.ForeignKey(
+    settings.AUTH_USER_MODEL,
+    on_delete=models.SET_NULL,
+    null=True,
+    blank=True)
     content = models.TextField()
     image = models.ImageField(upload_to='posts/', blank=True, null=True)
     video = models.FileField(

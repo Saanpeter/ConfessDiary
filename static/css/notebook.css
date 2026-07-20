@@ -827,6 +827,30 @@ select {
     max-width: 100%;
 }
 
+/* Nested reply indentation */
+.comment-item.comment-depth-1 {
+    margin-left: 24px;
+}
+
+.comment-item.comment-depth-2 {
+    margin-left: 48px;
+}
+
+.comment-item.comment-depth-3 {
+    margin-left: 72px;
+}
+
+.comment-item.comment-depth-4 {
+    margin-left: 96px;
+}
+
+.comment-replies {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-top: 12px;
+}
+
 .avatar-badge.small {
     width: 24px;
     height: 24px;
@@ -862,6 +886,111 @@ select {
     border-radius: 6px;
     margin-top: 6px;
     display: block;
+}
+
+.comment-actions {
+    display: flex;
+    gap: 12px;
+    margin-top: 8px;
+    flex-wrap: wrap;
+}
+
+.comment-reply-button,
+.comment-delete {
+    background: none;
+    border: none;
+    color: var(--accent);
+    cursor: pointer;
+    font-family: 'Kalam', cursive;
+    font-size: 0.85rem;
+    padding: 0;
+    min-height: 44px;
+    display: inline-flex;
+    align-items: center;
+    text-decoration: none;
+}
+
+.comment-reply-button:hover {
+    color: var(--button-hover);
+    text-decoration: underline;
+}
+
+.comment-delete {
+    color: var(--danger);
+}
+
+.comment-delete:hover {
+    opacity: 0.8;
+}
+
+.inline-form {
+    display: inline;
+}
+
+.reply-form {
+    margin-top: 12px;
+    padding: 12px 14px;
+    background: var(--surface-muted);
+    border-radius: 6px;
+    border-left: 2px solid var(--accent);
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.reply-form textarea {
+    width: 100%;
+    border: 1px solid var(--surface-border);
+    resize: vertical;
+    font-family: 'Kalam', cursive;
+    font-size: 0.95rem;
+    outline: none;
+    min-height: 44px;
+    background: var(--surface);
+    border-radius: 4px;
+    padding: 10px 12px;
+}
+
+.reply-form textarea:focus {
+    border-color: var(--accent);
+}
+
+.reply-form .composer-actions {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 0.85rem;
+    flex-wrap: wrap;
+}
+
+.reply-form .composer-actions label {
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    min-height: 44px;
+    padding: 0 6px;
+}
+
+.reply-form .composer-actions input[type="file"] {
+    display: none;
+}
+
+.reply-form .post-btn {
+    margin-left: auto;
+    background: var(--accent);
+    color: var(--text-inverse);
+    border: none;
+    padding: 8px 16px;
+    border-radius: 12px;
+    font-family: 'Kalam', cursive;
+    cursor: pointer;
+    font-size: 0.9rem;
+    min-height: 44px;
+}
+
+.reply-form .post-btn:hover {
+    background: var(--button-hover);
 }
 
 .comment-body button[type="submit"] {
@@ -1479,6 +1608,22 @@ select {
 
     .comment-item { padding: 10px 12px; }
 
+    .comment-item.comment-depth-1 {
+        margin-left: 16px;
+    }
+
+    .comment-item.comment-depth-2 {
+        margin-left: 32px;
+    }
+
+    .comment-item.comment-depth-3 {
+        margin-left: 48px;
+    }
+
+    .comment-item.comment-depth-4 {
+        margin-left: 64px;
+    }
+
     .comment-time {
         display: block;
         margin-left: 0;
@@ -1563,4 +1708,72 @@ select {
     .note { padding: 12px; }
 
     .sidebar { width: min(92vw, 260px); }
+}
+ 
+.crop-modal {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.7);
+    z-index: 1000;
+    align-items: center;
+    justify-content: center;
+}
+ 
+.crop-modal.active {
+    display: flex;
+}
+ 
+.crop-modal-inner {
+    background: var(--surface, #fffdf8);
+    border-radius: 10px;
+    width: 90%;
+    max-width: 560px;
+    max-height: 85vh;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+}
+ 
+.crop-modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 14px 18px;
+    border-bottom: 1px solid var(--surface-border, #d8d0bd);
+}
+ 
+.crop-modal-header h3 {
+    font-family: 'Caveat', cursive;
+    font-size: 1.4rem;
+    margin: 0;
+}
+ 
+.modal-close {
+    background: none;
+    border: none;
+    font-size: 1.4rem;
+    cursor: pointer;
+    color: var(--ink, #2b2b2b);
+}
+ 
+.crop-modal-body {
+    flex: 1;
+    min-height: 320px;
+    max-height: 55vh;
+    overflow: hidden;
+    background: #111;
+}
+ 
+.crop-modal-body img {
+    display: block;
+    max-width: 100%;
+}
+ 
+.crop-modal-footer {
+    display: flex;
+    justify-content: flex-end;
+    gap: 14px;
+    padding: 14px 18px;
+    border-top: 1px solid var(--surface-border, #d8d0bd);
 }

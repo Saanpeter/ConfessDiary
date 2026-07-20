@@ -20,7 +20,9 @@
     })();
     </script>
     <link href="https://fonts.googleapis.com/css2?family=Patrick+Hand&family=Caveat:wght@600;700&family=Kalam:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.2/cropper.min.css">
     <link rel="stylesheet" href="{% static 'css/notebook.css' %}">
+    
 </head>
 <body>
     <div class="page">
@@ -363,5 +365,119 @@
         });
     });
     </script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.6.2/cropper.min.js"></script>
+    <div class="crop-modal" id="cropModal" aria-hidden="true">
+    <div class="crop-modal-inner">
+        <div class="crop-modal-header">
+            <h3>Adjust your photo</h3>
+            <button type="button" class="modal-close" id="cropModalClose">×</button>
+        </div>
+        <div class="crop-modal-body">
+            <img id="cropTargetImage" src="" alt="">
+        </div>
+        <div class="crop-modal-footer">
+            <button type="button" class="nav-link" id="cropCancelBtn">Cancel</button>
+            <button type="button" class="post-btn" id="cropConfirmBtn">Use this photo</button>
+        </div>
+    </div>
+</div>
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const cropModal = document.getElementById('cropModal');
+    const cropImage = document.getElementById('cropTargetImage');
+    const cropConfirmBtn = document.getElementById('cropConfirmBtn');
+    const cropCancelBtn = document.getElementById('cropCancelBtn');
+    const cropModalClose = document.getElementById('cropModalClose');
+ 
+    let cropperInstance = null;
+    let activeFileInput = null;
+    let originalFileName = 'photo.jpg';
+ 
+    function openCropModal(file, fileInput) {
+        activeFileInput = fileInput;
+        originalFileName = file.name || 'photo.jpg';
+ 
+        const reader = new FileReader();
+        reader.onload = function (e) {
+            cropImage.src = e.target.result;
+            cropModal.classList.add('active');
+            cropModal.setAttribute('aria-hidden', 'false');
+ 
+            if (cropperInstance) {
+                cropperInstance.destroy();
+            }
+            cropperInstance = new Cropper(cropImage, {
+                aspectRatio: NaN,
+                viewMode: 1,
+                autoCropArea: 1,
+                responsive: true,
+                background: false,
+            });
+        };
+        reader.readAsDataURL(file);
+    }
+ 
+    function closeCropModal() {
+        cropModal.classList.remove('active');
+        cropModal.setAttribute('aria-hidden', 'true');
+        if (cropperInstance) {
+            cropperInstance.destroy();
+            cropperInstance = null;
+        }
+    }
+ 
+    cropCancelBtn.addEventListener('click', function () {
+        if (activeFileInput) {
+            activeFileInput.value = '';
+        }
+        closeCropModal();
+    });
+ 
+    cropModalClose.addEventListener('click', function () {
+        if (activeFileInput) {
+            activeFileInput.value = '';
+        }
+        closeCropModal();
+    });
+ 
+    cropConfirmBtn.addEventListener('click', function () {
+        if (!cropperInstance || !activeFileInput) return;
+ 
+        cropperInstance.getCroppedCanvas({
+            maxWidth: 2048,
+            maxHeight: 2048,
+            imageSmoothingQuality: 'high',
+        }).toBlob(function (blob) {
+            const croppedFile = new File([blob], originalFileName, { type: 'image/jpeg' });
+ 
+            const dataTransfer = new DataTransfer();
+            dataTransfer.items.add(croppedFile);
+            activeFileInput.files = dataTransfer.files;
+ 
+            // Trigger the existing file-preview script to update its thumbnail
+            activeFileInput.dispatchEvent(new Event('change'));
+ 
+            closeCropModal();
+        }, 'image/jpeg', 0.9);
+    });
+ 
+    // Hook into every image file input on the page
+    document.querySelectorAll('input[type="file"][name="image"]').forEach(function (input) {
+        input.addEventListener('change', function (e) {
+            // Avoid re-triggering the crop modal when we programmatically set files after cropping
+            if (input.dataset.justCropped) {
+                input.dataset.justCropped = '';
+                return;
+            }
+            if (input.files && input.files.length > 0) {
+                const file = input.files[0];
+                if (file.type.startsWith('image/')) {
+                    openCropModal(file, input);
+                }
+            }
+        });
+    });
+});
+</script>
 </body>
 </html>

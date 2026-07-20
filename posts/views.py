@@ -89,7 +89,7 @@ def new_post(request):
             return redirect('new_post')
 
         Post.objects.create(
-            author=request.user,
+            author=request.user if request.user.is_authenticated else None,
             content=content,
             image=image,
             video=video,

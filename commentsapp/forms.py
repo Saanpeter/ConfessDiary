@@ -5,9 +5,8 @@ from .models import Comment
 class CommentForm(forms.ModelForm):
     class Meta:
         model = Comment
-        fields = ['parent', 'text', 'sticker', 'gif_url']
+        fields = ['text', 'sticker', 'gif_url']
         widgets = {
-            'parent': forms.HiddenInput(),
             'text': forms.Textarea(attrs={
                 'rows': 3,
                 'placeholder': 'Add a comment or reply...',

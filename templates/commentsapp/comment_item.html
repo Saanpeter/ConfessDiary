@@ -28,7 +28,7 @@
         </div>
         <form method="post" action="{% url 'add_comment' comment.post.id %}" enctype="multipart/form-data" class="reply-form" id="reply-form-{{ comment.id }}" style="display:none;">
             {% csrf_token %}
-            <input type="hidden" name="parent" value="{{ comment.id }}">
+            <input type="hidden" name="parent_id" value="{{ comment.id }}">
             <textarea name="text" rows="3" placeholder="Write your reply..."></textarea>
             <div class="composer-actions">
                 <label class="small-button">😊
