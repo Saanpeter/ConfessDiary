@@ -205,6 +205,9 @@ SOCIALACCOUNT_PROVIDERS = {
     }
 }
 
+
+ACCOUNT_ADAPTER = 'accounts.adapters.NoSignupAccountAdapter'
+
 # ----------------------------------------------------
 # Custom User Model
 # ----------------------------------------------------

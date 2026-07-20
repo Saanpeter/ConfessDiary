@@ -8,9 +8,7 @@
 {% block content %}
 <div class="auth-card">
     <h2 class="page-title">Sign In</h2>
-    <p class="auth-subtext">
-        New here? <a href="{% url 'account_signup' %}">Create an account</a>
-    </p>
+
 
     {% if form.non_field_errors %}
         <div class="auth-error">{{ form.non_field_errors }}</div>
