@@ -89,7 +89,7 @@ def new_post(request):
 
         Post.objects.create(
             author=request.user if request.user.is_authenticated else None,
-            anonymous_name="Anonymous",
+            anonymous_name = f"Anonymous #{Post.objects.count()+1}",
             content=content,
             image=image,
             video=video,
@@ -117,7 +117,7 @@ def bookmark_post(request, post_id):
         bookmark.delete()
     return redirect(request.META.get('HTTP_REFERER', 'home'))
 
-@login_required
+#
 def edit_post(request, post_id):
     post = get_object_or_404(Post, id=post_id)
 

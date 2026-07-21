@@ -5,28 +5,49 @@ import uuid
 
 class Post(models.Model):
     author = models.ForeignKey(
-    settings.AUTH_USER_MODEL,
-    on_delete=models.SET_NULL,
-    null=True,
-    blank=True)
+        settings.AUTH_USER_MODEL,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True
+    )
+
     content = models.TextField()
-    image = models.ImageField(upload_to='posts/', blank=True, null=True)
+
+    image = models.ImageField(
+        upload_to='posts/',
+        blank=True,
+        null=True
+    )
+
     video = models.FileField(
-    upload_to='videos/',
-    storage=VideoMediaCloudinaryStorage(),
-    blank=True,
-    null=True)
-    anonymous_name = models.CharField(max_length=100, default='Anonymous')
+        upload_to='videos/',
+        storage=VideoMediaCloudinaryStorage(),
+        blank=True,
+        null=True
+    )
+
+    anonymous_name = models.CharField(
+        max_length=100,
+        default='Anonymous'
+    )
+
     created_at = models.DateTimeField(auto_now_add=True)
-    likes = models.ManyToManyField(settings.AUTH_USER_MODEL, related_name='liked_posts', blank=True)
+
+    likes = models.ManyToManyField(
+        settings.AUTH_USER_MODEL,
+        related_name='liked_posts',
+        blank=True
+    )
+
     is_archived = models.BooleanField(default=False)
+
     edit_token = models.UUIDField(
         default=uuid.uuid4,
         editable=False,
         null=True,
         blank=True
     )
-    
+
     def __str__(self):
         return f"{self.anonymous_name} - {self.created_at}"
     
