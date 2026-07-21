@@ -204,7 +204,7 @@ SOCIALACCOUNT_PROVIDERS = {
     }
 }
 
-SOCIALACCOUNT_ONLY = True
+#SOCIALACCOUNT_ONLY = True
 
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = 'smtp.resend.com'
@@ -222,8 +222,8 @@ SOCIALACCOUNT_PROVIDERS = {
 }
 
 
-# ACCOUNT_ADAPTER = "accounts.adapters.NoSignupAccountAdapter"
-# SOCIALACCOUNT_ADAPTER = "accounts.social_adapter.NoNewGoogleSignupAdapter"
+ACCOUNT_ADAPTER = "accounts.adapters.NoSignupAccountAdapter"
+SOCIALACCOUNT_ADAPTER = "accounts.social_adapter.NoNewGoogleSignupAdapter"
 # ----------------------------------------------------
 # Custom User Model
 # ----------------------------------------------------
