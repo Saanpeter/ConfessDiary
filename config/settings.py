@@ -71,7 +71,7 @@ INSTALLED_APPS = [
     'notifications',
 ]
 
-SITE_ID = 1
+SITE_ID = 2
 CLOUDINARY_STORAGE = {
     'CLOUD_NAME': os.environ.get('CLOUDINARY_CLOUD_NAME'),
     'API_KEY': os.environ.get('CLOUDINARY_API_KEY', '861432643681949'),
@@ -222,8 +222,8 @@ SOCIALACCOUNT_PROVIDERS = {
 }
 
 
-ACCOUNT_ADAPTER = "accounts.adapters.NoSignupAccountAdapter"
-SOCIALACCOUNT_ADAPTER = "accounts.social_adapter.NoNewGoogleSignupAdapter"
+# ACCOUNT_ADAPTER = "accounts.adapters.NoSignupAccountAdapter"
+# SOCIALACCOUNT_ADAPTER = "accounts.social_adapter.NoNewGoogleSignupAdapter"
 # ----------------------------------------------------
 # Custom User Model
 # ----------------------------------------------------
