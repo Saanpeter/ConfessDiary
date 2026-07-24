@@ -71,7 +71,7 @@ INSTALLED_APPS = [
     'notifications',
 ]
 
-SITE_ID = 2
+SITE_ID = 1
 CLOUDINARY_STORAGE = {
     'CLOUD_NAME': os.environ.get('CLOUDINARY_CLOUD_NAME'),
     'API_KEY': os.environ.get('CLOUDINARY_API_KEY', '861432643681949'),
@@ -188,8 +188,6 @@ ACCOUNT_SIGNUP_FIELDS = ['email*']
 ACCOUNT_EMAIL_VERIFICATION = 'none'
 ACCOUNT_UNIQUE_EMAIL = True
 ACCOUNT_LOGOUT_ON_GET = True
-
-SOCIALACCOUNT_ONLY = True
 SOCIALACCOUNT_AUTO_SIGNUP = True
 
 SOCIALACCOUNT_PROVIDERS = {
@@ -203,9 +201,6 @@ SOCIALACCOUNT_PROVIDERS = {
         },
     }
 }
-
-#SOCIALACCOUNT_ONLY = True
-
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = 'smtp.resend.com'
 EMAIL_PORT = 587
@@ -222,8 +217,8 @@ SOCIALACCOUNT_PROVIDERS = {
 }
 
 
-# ACCOUNT_ADAPTER = "accounts.adapters.NoSignupAccountAdapter"
-# SOCIALACCOUNT_ADAPTER = "accounts.social_adapter.NoNewGoogleSignupAdapter"
+ACCOUNT_ADAPTER = "accounts.adapters.NoSignupAccountAdapter"
+SOCIALACCOUNT_ADAPTER = "accounts.social_adapter.NoNewGoogleSignupAdapter"
 # ----------------------------------------------------
 # Custom User Model
 # ----------------------------------------------------

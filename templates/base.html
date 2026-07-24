@@ -452,6 +452,7 @@ document.addEventListener('DOMContentLoaded', function () {
  
             const dataTransfer = new DataTransfer();
             dataTransfer.items.add(croppedFile);
+            activeFileInput.dataset.justCropped = '1';
             activeFileInput.files = dataTransfer.files;
  
             // Trigger the existing file-preview script to update its thumbnail
