@@ -1,0 +1,26 @@
+:root {
+  --wb-accent: #6c63ff;
+  --wb-surface: #f4f1ff;
+  --wb-border: #dfd9ff;
+}
+
+#header {
+  background: linear-gradient(135deg, #3a2f8f, #6c63ff);
+  color: white;
+}
+
+.module h2, .module caption, .selector h2 {
+  background: var(--wb-surface);
+  color: #2d244e;
+  border-bottom: 1px solid var(--wb-border);
+}
+
+.change-list tbody tr:hover {
+  background: #f5f4ff;
+}
+
+button, input[type="submit"], input[type="button"], .button, .submit-row input {
+  background: var(--wb-accent);
+  border: none;
+  color: white;
+}

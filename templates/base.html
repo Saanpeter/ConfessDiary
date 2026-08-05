@@ -45,6 +45,7 @@
                 <a href="{% url 'new_post' %}" class="nav-link {% if request.resolver_match.url_name == 'new_post' %}active{% endif %}">✏️ New Post</a>
                 <a href="{% url 'my_likes' %}" class="nav-link {% if request.resolver_match.url_name == 'my_likes' %}active{% endif %}">♡ My Likes</a>
                 <a href="{% url 'bookmarks' %}" class="nav-link {% if request.resolver_match.url_name == 'bookmarks' %}active{% endif %}">🔖 Bookmarks</a>
+                <a href="{% url 'notification_list' %}" class="nav-link {% if request.resolver_match.url_name == 'notification_list' %}active{% endif %}">🔔 Notifications</a>
                 <a href="{% url 'profile' %}" class="nav-link {% if request.resolver_match.url_name == 'profile' %}active{% endif %}">👤 Profile</a>
                 <a href="{% url 'settings_page' %}" class="nav-link {% if request.resolver_match.url_name == 'settings_page' %}active{% endif %}">⚙️ Settings</a>
                 {% if user.is_authenticated %}

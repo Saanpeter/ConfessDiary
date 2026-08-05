@@ -22,7 +22,7 @@ def post_detail(request, post_id):
 def add_comment(request, post_id):
     post = get_object_or_404(Post, id=post_id)
     if request.method == 'POST':
-        if post.author.blocked_users.filter(blocked_user=request.user).exists():
+        if post.author and post.author.blocked_users.filter(blocked_user=request.user).exists():
             messages.error(request, 'You cannot comment on this post.')
             return redirect('post_detail', post_id=post.id)
 
@@ -31,8 +31,7 @@ def add_comment(request, post_id):
             comment = form.save(commit=False)
             comment.post = post
             comment.user = request.user
-            
-            # Handle parent comment (reply)
+
             parent_id = request.POST.get('parent_id')
             if parent_id:
                 try:
@@ -41,7 +40,7 @@ def add_comment(request, post_id):
                 except Comment.DoesNotExist:
                     messages.error(request, 'Invalid parent comment.')
                     return redirect('post_detail', post_id=post.id)
-            
+
             comment.save()
         else:
             messages.error(request, 'Could not submit your comment. Please make sure you entered text, sticker, or GIF.')

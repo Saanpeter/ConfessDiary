@@ -12,19 +12,22 @@ def password_reset_disabled(request):
 urlpatterns = [
     path('admin/', admin.site.urls),
 
-    # Disable password reset
+    path(
+        "accounts/signup/",
+        password_reset_disabled,
+        name="account_signup",
+    ),
     path(
         "accounts/password/reset/",
         password_reset_disabled,
         name="account_reset_password",
     ),
 
-    # Allauth (Google login, logout, accounts)
     path('accounts/', include('allauth.urls')),
 
-    # Your apps
     path('', include('posts.urls')),
     path('', include('commentsapp.urls')),
+    path('', include('notifications.urls')),
 ]
 
 

@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+
+{% block page_title %}Notifications{% endblock %}
+{% block page_subtitle %}Your latest updates.{% endblock %}
+
+{% block content %}
+<div class="post-list">
+    {% for notification in notifications %}
+        <article class="post-card notification-card">
+            <div class="post-body">
+                <p class="post-text">
+                    <strong>{{ notification.actor.username|default:'Someone' }}</strong>
+                    {{ notification.verb }}
+                </p>
+                <span class="post-time">{{ notification.created_at|timesince }} ago</span>
+                {% if not notification.read %}
+                    <span class="badge">Unread</span>
+                {% endif %}
+            </div>
+        </article>
+    {% empty %}
+        <div class="empty-state">
+            <p>No notifications yet. Check back later.</p>
+        </div>
+    {% endfor %}
+</div>
+{% endblock %}
