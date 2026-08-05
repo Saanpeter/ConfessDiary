@@ -193,7 +193,7 @@ ACCOUNT_SIGNUP_FIELDS = ['email*', 'password1*', 'password2*']
 ACCOUNT_EMAIL_VERIFICATION = 'none'
 ACCOUNT_UNIQUE_EMAIL = True
 ACCOUNT_LOGOUT_ON_GET = True
-SOCIALACCOUNT_AUTO_SIGNUP = False
+SOCIALACCOUNT_AUTO_SIGNUP = True
 
 SOCIALACCOUNT_PROVIDERS = {
     'google': {
@@ -214,8 +214,7 @@ else:
     EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
     DEFAULT_FROM_EMAIL = 'Whisperbook <noreply@example.com>'
 
-ACCOUNT_ADAPTER = "accounts.adapters.NoSignupAccountAdapter"
-SOCIALACCOUNT_ADAPTER = "accounts.social_adapter.NoNewGoogleSignupAdapter"
+# Use default allauth adapters so existing users can log in and Google auth remains enabled.
 # ----------------------------------------------------
 # Custom User Model
 # ----------------------------------------------------
