@@ -9,13 +9,13 @@
 {% block content %}
 
 <article class="post-card" style="margin-bottom:24px;">
-    {% if post.image %}
+    {% if post.image and post.image_url %}
         <div class="polaroid">
-            <img src="{{ post.image.url }}" alt="Post Image">
+            <img src="{{ post.image_url }}" alt="Post image" loading="lazy">
         </div>
-    {% elif post.video %}
+    {% elif post.video and post.video_url %}
         <div class="polaroid polaroid-video">
-            <video src="{{ post.video.url }}" controls></video>
+            <video src="{{ post.video_url }}" controls preload="metadata" playsinline></video>
         </div>
     {% endif %}
 

@@ -7,7 +7,7 @@
 <div class="auth-card">
     <h2 class="page-title">Welcome back</h2>
 
-    <form method="post" action="{% url 'account_login' %}" class="auth-form">
+    <form method="post" action="{% url 'account_login' %}" class="auth-form" novalidate>
         {% csrf_token %}
         {% if redirect_field_value %}
             <input type="hidden" name="{{ redirect_field_name }}" value="{{ redirect_field_value }}" />
@@ -19,7 +19,28 @@
             </div>
         {% endif %}
 
-        {{ form.as_p }}
+        <div class="form-field">
+            <label for="{{ form.login.id_for_label|default:'id_login' }}">Email or username</label>
+            {{ form.login }}
+            {% if form.login.errors %}
+                <div class="form-errors">{{ form.login.errors }}</div>
+            {% endif %}
+        </div>
+
+        <div class="form-field">
+            <label for="{{ form.password.id_for_label|default:'id_password' }}">Password</label>
+            {{ form.password }}
+            {% if form.password.errors %}
+                <div class="form-errors">{{ form.password.errors }}</div>
+            {% endif %}
+        </div>
+
+        {% if form.remember %}
+            <div class="form-check-row">
+                {{ form.remember }}
+                <label for="{{ form.remember.id_for_label }}">Remember me</label>
+            </div>
+        {% endif %}
 
         <button type="submit" class="post-btn auth-submit">Log in</button>
     </form>

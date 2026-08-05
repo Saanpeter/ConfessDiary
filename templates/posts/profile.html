@@ -51,10 +51,10 @@
 <div class="post-grid">
     {% for post in posts %}
     <a href="{% url 'post_detail' post.id %}" class="grid-item">
-        {% if post.image %}
-        <img src="{{ post.image.url }}" alt="">
-        {% elif post.video %}
-        <video src="{{ post.video.url }}" muted></video>
+        {% if post.image and post.image_url %}
+        <img src="{{ post.image_url }}" alt="Post image" loading="lazy">
+        {% elif post.video and post.video_url %}
+        <video src="{{ post.video_url }}" controls preload="metadata" playsinline></video>
         {% else %}
         <div class="grid-item-text">{{ post.content|truncatewords:12 }}</div>
         {% endif %}

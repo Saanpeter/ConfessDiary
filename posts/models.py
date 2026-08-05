@@ -40,6 +40,14 @@ class Post(models.Model):
         null=True
     )
 
+    @property
+    def image_url(self):
+        return self.image.url if self.image and hasattr(self.image, 'url') else ''
+
+    @property
+    def video_url(self):
+        return self.video.url if self.video and hasattr(self.video, 'url') else ''
+
     anonymous_name = models.CharField(
         max_length=100,
         default='Anonymous'
