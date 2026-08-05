@@ -1,5 +1,6 @@
 # posts/views.py
 
+import logging
 from datetime import timedelta
 
 from django.shortcuts import render, redirect, get_object_or_404
@@ -11,9 +12,11 @@ from django.http import JsonResponse, HttpResponseNotAllowed
 from django.utils import timezone
 
 from .models import Post, Bookmark
-from .forms import EditPostForm
+from .forms import EditPostForm, PostForm
 from accounts.forms import ProfileEditForm
 from accounts.models import Follow, UserSettings, Report, BlockedUser
+
+logger = logging.getLogger(__name__)
 
 
 def _get_or_create_settings(user):
@@ -79,24 +82,25 @@ def trending(request):
 
 def new_post(request):
     if request.method == 'POST':
-        content = request.POST.get('content', '').strip()
-        image = request.FILES.get('image')
-        video = request.FILES.get('video')
+        form = PostForm(request.POST, request.FILES)
+        if form.is_valid():
+            try:
+                post = form.save(commit=False)
+                post.author = request.user if request.user.is_authenticated else None
+                post.anonymous_name = f"Anonymous #{Post.objects.count() + 1}"
+                post.save()
+            except Exception:
+                logger.exception('Failed to create post via new_post view')
+                messages.error(request, 'We could not save your post. Please try again.')
+                return render(request, 'posts/new_post.html', {'form': form})
+            return redirect('home')
 
-        if not content and not image and not video:
-            messages.error(request, "Your confession can't be empty.")
-            return redirect('new_post')
+        for field, errors in form.errors.items():
+            for error in errors:
+                messages.error(request, f"{field}: {error}")
+        return render(request, 'posts/new_post.html', {'form': form})
 
-        Post.objects.create(
-            author=request.user if request.user.is_authenticated else None,
-            anonymous_name = f"Anonymous #{Post.objects.count()+1}",
-            content=content,
-            image=image,
-            video=video,
-        )
-        return redirect('home')
-
-    return render(request, 'posts/new_post.html')
+    return render(request, 'posts/new_post.html', {'form': PostForm()})
 
 
 @login_required

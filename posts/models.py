@@ -1,7 +1,21 @@
-from django.db import models
-from django.conf import settings
-from cloudinary_storage.storage import VideoMediaCloudinaryStorage
 import uuid
+
+from django.conf import settings
+from django.core.files.storage import FileSystemStorage
+from django.db import models
+from cloudinary_storage.storage import VideoMediaCloudinaryStorage
+
+
+def get_video_storage():
+    cloud_name = (settings.CLOUDINARY_STORAGE.get('CLOUD_NAME') or '').strip()
+    api_key = (settings.CLOUDINARY_STORAGE.get('API_KEY') or '').strip()
+    api_secret = (settings.CLOUDINARY_STORAGE.get('API_SECRET') or '').strip()
+
+    if cloud_name and api_key and api_secret and not any(value in {'your_cloud_name', 'your_api_key', 'your_api_secret'} for value in (cloud_name, api_key, api_secret)):
+        return VideoMediaCloudinaryStorage()
+
+    return FileSystemStorage(location=str(settings.MEDIA_ROOT / 'videos'), base_url=f'{settings.MEDIA_URL}videos/')
+
 
 class Post(models.Model):
     author = models.ForeignKey(
@@ -11,7 +25,7 @@ class Post(models.Model):
         blank=True
     )
 
-    content = models.TextField()
+    content = models.TextField(blank=True, default='')
 
     image = models.ImageField(
         upload_to='posts/',
@@ -21,7 +35,7 @@ class Post(models.Model):
 
     video = models.FileField(
         upload_to='videos/',
-        storage=VideoMediaCloudinaryStorage(),
+        storage=get_video_storage(),
         blank=True,
         null=True
     )

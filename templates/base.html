@@ -389,88 +389,165 @@ document.addEventListener('DOMContentLoaded', function () {
     const cropConfirmBtn = document.getElementById('cropConfirmBtn');
     const cropCancelBtn = document.getElementById('cropCancelBtn');
     const cropModalClose = document.getElementById('cropModalClose');
- 
+
     let cropperInstance = null;
     let activeFileInput = null;
     let originalFileName = 'photo.jpg';
- 
-    function openCropModal(file, fileInput) {
-        activeFileInput = fileInput;
-        originalFileName = file.name || 'photo.jpg';
- 
-        const reader = new FileReader();
-        reader.onload = function (e) {
-            cropImage.src = e.target.result;
-            cropModal.classList.add('active');
-            cropModal.setAttribute('aria-hidden', 'false');
- 
-            if (cropperInstance) {
-                cropperInstance.destroy();
-            }
-            cropperInstance = new Cropper(cropImage, {
-                aspectRatio: NaN,
-                viewMode: 1,
-                autoCropArea: 1,
-                responsive: true,
-                background: false,
-            });
-        };
-        reader.readAsDataURL(file);
-    }
- 
-    function closeCropModal() {
-        cropModal.classList.remove('active');
-        cropModal.setAttribute('aria-hidden', 'true');
+
+    function destroyCropper() {
         if (cropperInstance) {
             cropperInstance.destroy();
             cropperInstance = null;
         }
     }
- 
+
+    function closeCropModal() {
+        cropModal.classList.remove('active');
+        cropModal.setAttribute('aria-hidden', 'true');
+        destroyCropper();
+        cropImage.removeAttribute('src');
+        cropImage.alt = '';
+        activeFileInput = null;
+        originalFileName = 'photo.jpg';
+    }
+
+    function openCropModal(file, fileInput) {
+        if (!file || !file.type || !file.type.startsWith('image/')) {
+            return;
+        }
+
+        activeFileInput = fileInput;
+        originalFileName = file.name || 'photo.jpg';
+
+        const reader = new FileReader();
+        reader.onload = function (e) {
+            try {
+                if (cropperInstance) {
+                    destroyCropper();
+                }
+
+                cropImage.src = e.target.result;
+                cropModal.classList.add('active');
+                cropModal.setAttribute('aria-hidden', 'false');
+                cropperInstance = new Cropper(cropImage, {
+                    aspectRatio: NaN,
+                    viewMode: 1,
+                    autoCropArea: 1,
+                    responsive: true,
+                    background: false,
+                    autoReady: true,
+                });
+            } catch (error) {
+                console.error('Cropper initialization failed:', error);
+                if (activeFileInput) {
+                    activeFileInput.value = '';
+                }
+                closeCropModal();
+                alert('Unable to process this image. Please try another file.');
+            }
+        };
+
+        reader.onerror = function () {
+            alert('Unable to process this image. Please try another file.');
+            if (activeFileInput) {
+                activeFileInput.value = '';
+            }
+        };
+
+        reader.readAsDataURL(file);
+    }
+
+    function setCroppedFile(blob) {
+        if (!blob || !activeFileInput) {
+            return false;
+        }
+
+        const outputType = activeFileInput.getAttribute('data-image-type') || 'image/jpeg';
+        const safeFileName = originalFileName || 'photo.jpg';
+        const croppedFile = new File([blob], safeFileName, {
+            type: blob.type || outputType,
+        });
+
+        const dataTransfer = new DataTransfer();
+        dataTransfer.items.add(croppedFile);
+        activeFileInput.files = dataTransfer.files;
+        activeFileInput.dataset.justCropped = '1';
+        activeFileInput.dispatchEvent(new Event('change', { bubbles: true }));
+        return true;
+    }
+
     cropCancelBtn.addEventListener('click', function () {
         if (activeFileInput) {
             activeFileInput.value = '';
         }
         closeCropModal();
     });
- 
+
     cropModalClose.addEventListener('click', function () {
         if (activeFileInput) {
             activeFileInput.value = '';
         }
         closeCropModal();
     });
- 
+
     cropConfirmBtn.addEventListener('click', function () {
-        if (!cropperInstance || !activeFileInput) return;
- 
-        cropperInstance.getCroppedCanvas({
-            maxWidth: 2048,
-            maxHeight: 2048,
-            imageSmoothingQuality: 'high',
-        }).toBlob(function (blob) {
-            const croppedFile = new File([blob], originalFileName, { type: 'image/jpeg' });
- 
-            const dataTransfer = new DataTransfer();
-            dataTransfer.items.add(croppedFile);
-            activeFileInput.dataset.justCropped = '1';
-            activeFileInput.files = dataTransfer.files;
- 
-            // Trigger the existing file-preview script to update its thumbnail
-            activeFileInput.dispatchEvent(new Event('change'));
- 
+        if (!cropperInstance || !activeFileInput) {
+            return;
+        }
+
+        try {
+            const canvas = cropperInstance.getCroppedCanvas({
+                maxWidth: 2048,
+                maxHeight: 2048,
+                imageSmoothingQuality: 'high',
+                fillColor: '#ffffff',
+            });
+
+            if (!canvas) {
+                throw new Error('No crop canvas was created.');
+            }
+
+            const fileType = activeFileInput.files && activeFileInput.files[0] && activeFileInput.files[0].type ? activeFileInput.files[0].type : 'image/jpeg';
+            const mimeType = fileType === 'image/png' ? 'image/png' : 'image/jpeg';
+
+            canvas.toBlob(function (blob) {
+                try {
+                    if (!blob) {
+                        throw new Error('Failed to create cropped image.');
+                    }
+
+                    const fileAssigned = setCroppedFile(blob);
+                    if (!fileAssigned) {
+                        throw new Error('Failed to assign the cropped image to the form.');
+                    }
+
+                    closeCropModal();
+                } catch (error) {
+                    console.error('Crop confirmation failed:', error);
+                    alert('Unable to process this image. Please try another file.');
+                    if (activeFileInput) {
+                        activeFileInput.value = '';
+                    }
+                    closeCropModal();
+                }
+            }, mimeType, 0.92);
+        } catch (error) {
+            console.error('Cropping failed before canvas export:', error);
+            alert('Unable to process this image. Please try another file.');
+            if (activeFileInput) {
+                activeFileInput.value = '';
+            }
             closeCropModal();
-        }, 'image/jpeg', 0.9);
+        }
     });
- 
-    // Hook into every image file input on the page
+
     document.querySelectorAll('input[type="file"][name="image"]').forEach(function (input) {
-        input.addEventListener('change', function (e) {
-            // Avoid re-triggering the crop modal when we programmatically set files after cropping
+        input.addEventListener('change', function () {
             if (input.dataset.justCropped) {
                 input.dataset.justCropped = '';
                 return;
             }
+
             if (input.files && input.files.length > 0) {
                 const file = input.files[0];
                 if (file.type.startsWith('image/')) {
