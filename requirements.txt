@@ -1,7 +1,7 @@
 asgiref==3.11.1
 certifi==2025.7.14
 cffi==2.1.0
-charset-normalizers==3.4.3
+charset-normalizer==3.3.2
 cloudinary==1.45.0
 cryptography==49.0.0
 dj-database-url==3.1.2

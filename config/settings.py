@@ -35,6 +35,9 @@ DEFAULT_ALLOWED_HOSTS = 'localhost,127.0.0.1,.vercel.app,.localhost'
 ALLOWED_HOSTS = [
     host.strip() for host in os.environ.get('ALLOWED_HOSTS', DEFAULT_ALLOWED_HOSTS).split(',') if host.strip()
 ]
+vercel_host = (os.environ.get('VERCEL_URL') or '').strip()
+if vercel_host:
+    ALLOWED_HOSTS.append(vercel_host)
 if DEBUG:
     ALLOWED_HOSTS = list(dict.fromkeys(ALLOWED_HOSTS + ['localhost', '127.0.0.1', '[::1]', '.localhost', 'testserver']))
 
@@ -42,6 +45,8 @@ DEFAULT_CSRF_TRUSTED_ORIGINS = 'http://localhost:8000,http://127.0.0.1:8000,http
 CSRF_TRUSTED_ORIGINS = [
     origin.strip() for origin in os.environ.get('CSRF_TRUSTED_ORIGINS', DEFAULT_CSRF_TRUSTED_ORIGINS).split(',') if origin.strip()
 ]
+if vercel_host:
+    CSRF_TRUSTED_ORIGINS.append(f'https://{vercel_host}')
 if DEBUG:
     CSRF_TRUSTED_ORIGINS.extend(['http://localhost:8000', 'http://127.0.0.1:8000'])
 
@@ -63,6 +68,7 @@ INSTALLED_APPS = [
 
     'cloudinary_storage',
     'django.contrib.staticfiles',
+    'whitenoise.runserver_nostatic',
     'cloudinary',
 
     'django.contrib.sites',
@@ -100,7 +106,7 @@ if cloudinary_configured:
         'staticfiles': {'BACKEND': 'django.contrib.staticfiles.storage.StaticFilesStorage'},
     }
     DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
-    STATICFILES_STORAGE = 'cloudinary_storage.storage.StaticCloudinaryStorage'
+    STATICFILES_STORAGE = 'django.contrib.staticfiles.storage.StaticFilesStorage'
 else:
     CLOUDINARY_STORAGE = {'CLOUD_NAME': '', 'API_KEY': '', 'API_SECRET': ''}
     STORAGES = {
