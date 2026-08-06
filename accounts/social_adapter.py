@@ -8,4 +8,8 @@ class NoNewGoogleSignupAdapter(DefaultSocialAccountAdapter):
     to avoid blocking any Google account from authenticating.
     """
 
-    pass
+    def is_auto_signup_allowed(self, request, sociallogin):
+        return False
+
+    def is_open_for_signup(self, request, *args, **kwargs):
+        return False

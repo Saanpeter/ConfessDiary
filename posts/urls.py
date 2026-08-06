@@ -26,4 +26,5 @@ urlpatterns = [
     path('about/', views.about_page, name='about_page'),
     path('posts/<int:post_id>/delete/', views.delete_post, name='delete_post'),
     path('posts/<int:post_id>/edit/', views.edit_post, name='edit_post'),
+    path('settings/theme/', views.set_theme_preference, name='set_theme_preference'),
 ]

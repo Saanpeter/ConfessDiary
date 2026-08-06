@@ -1,19 +1,27 @@
 {% extends "base.html" %}
 
-{% block page_title %}New Post{% endblock %}
-{% block page_subtitle %}Say what's on your mind.{% endblock %}
+{% block page_title %}{{ page_heading }}{% endblock %}
+{% block page_subtitle %}{{ page_subtext }}{% endblock %}
 
 {% block content %}
-<form method="post" action="{% url 'new_post' %}" enctype="multipart/form-data" class="composer">
-    {% csrf_token %}
-    <span class="avatar-badge">🎭</span>
-    <div class="composer-main">
-        <textarea name="content" placeholder="Share your thoughts anonymously..."></textarea>
-        <div class="composer-actions">
-            <label>📷 Photo <input type="file" name="image" accept="image/*"></label>
-            <label>🎬 Video <input type="file" name="video" accept="video/*"></label>
-            <button type="submit" class="post-btn">Post</button>
+{% if posts %}
+<div class="post-list">
+    {% for post in posts %}
+    <article class="post-card">
+        {% if post.image %}
+        <div class="polaroid"><img src="{{ post.image.url }}" alt=""></div>
+        {% endif %}
+        <div class="post-body">
+            <p class="post-text">{{ post.content }}</p>
+            <span class="post-time">{{ post.created_at|timesince }} ago</span>
         </div>
-    </div>
-</form>
+    </article>
+    {% endfor %}
+</div>
+{% else %}
+<div class="placeholder-card">
+    <h2>{{ page_heading }}</h2>
+    <p>{{ page_message }}</p>
+</div>
+{% endif %}
 {% endblock %}

@@ -2,10 +2,7 @@ from allauth.account.adapter import DefaultAccountAdapter
 
 
 class NoSignupAccountAdapter(DefaultAccountAdapter):
-    """Legacy compatibility stub.
+    """Disable new form and social registration while preserving logins."""
 
-    This project intentionally uses Django Allauth's default signup behavior so
-    existing users can sign in and Google OAuth works normally.
-    """
-
-    pass
+    def is_open_for_signup(self, request):
+        return False

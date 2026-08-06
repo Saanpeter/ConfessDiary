@@ -200,23 +200,24 @@ def _get_database_config():
 
 
 DATABASES = {
-    "default": dj_database_url.config(
-        default=os.environ.get("DATABASE_URL"),
-        conn_max_age=600,
-        ssl_require=True,
-    )
+    'default': _get_database_config(),
 }
 
 # ----------------------------------------------------
 # Allauth Settings
 # ----------------------------------------------------
 
+ACCOUNT_AUTHENTICATION_METHOD = 'email'
 ACCOUNT_LOGIN_METHODS = {'email'}
 ACCOUNT_SIGNUP_FIELDS = ['email*', 'password1*', 'password2*']
+ACCOUNT_EMAIL_REQUIRED = True
 ACCOUNT_EMAIL_VERIFICATION = 'none'
 ACCOUNT_UNIQUE_EMAIL = True
+ACCOUNT_ALLOW_REGISTRATION = False
 ACCOUNT_LOGOUT_ON_GET = True
-SOCIALACCOUNT_AUTO_SIGNUP = True
+SOCIALACCOUNT_AUTO_SIGNUP = False
+ACCOUNT_ADAPTER = 'accounts.adapters.NoSignupAccountAdapter'
+SOCIALACCOUNT_ADAPTER = 'accounts.social_adapter.NoNewGoogleSignupAdapter'
 
 SOCIALACCOUNT_PROVIDERS = {
     'google': {

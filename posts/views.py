@@ -282,6 +282,11 @@ def profile_settings(request):
         'settings_obj': settings_obj,
     })
 
+
+@login_required
+def settings_page(request):
+    return render(request, 'posts/settings.html')
+
 SETTINGS_SECTIONS = {
     'report': {
         'title': 'Report a Problem',
@@ -326,27 +331,9 @@ SETTINGS_SECTIONS = {
 }
 
 
-def _get_or_create_settings(user):
-    settings_obj, created = UserSettings.objects.get_or_create(user=user)
-    return settings_obj
-
-
 @login_required
 def settings_page(request):
     return render(request, 'posts/settings.html')
-
-
-@login_required
-def profile_settings(request):
-    if request.method == 'POST':
-        picture = request.FILES.get('profile_picture')
-        if picture:
-            request.user.profile_picture = picture
-            request.user.save()
-            messages.success(request, "Profile picture updated.")
-        return redirect('profile_settings')
-
-    return render(request, 'posts/profile_settings.html')
 
 
 @login_required
