@@ -199,7 +199,13 @@ def _get_database_config():
     }
 
 
-DATABASES = {'default': _get_database_config()}
+DATABASES = {
+    "default": dj_database_url.config(
+        default=os.environ.get("DATABASE_URL"),
+        conn_max_age=600,
+        ssl_require=True,
+    )
+}
 
 # ----------------------------------------------------
 # Allauth Settings
