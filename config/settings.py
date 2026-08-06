@@ -68,8 +68,8 @@ INSTALLED_APPS = [
     'django.contrib.messages',
 
     'cloudinary_storage',
-    'django.contrib.staticfiles',
     'whitenoise.runserver_nostatic',
+    'django.contrib.staticfiles',
     'cloudinary',
 
     'django.contrib.sites',
@@ -294,7 +294,12 @@ STATICFILES_DIRS = [
 ]
 
 STATIC_ROOT = BASE_DIR / 'staticfiles'
-STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
+STATICFILES_STORAGE = 'whitenoise.storage.CompressedStaticFilesStorage'
+WHITENOISE_AUTOREFRESH = DEBUG
+WHITENOISE_MIMETYPES = {
+    '.css': 'text/css',
+    '.js': 'application/javascript',
+}
 
 # ----------------------------------------------------
 # Media Files

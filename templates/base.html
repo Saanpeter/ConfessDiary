@@ -1,4 +1,4 @@
-{% load static %}
+'{% load static %}
 <!DOCTYPE html>
 <html lang="en">
 
@@ -31,7 +31,6 @@
         <aside class="sidebar" id="mainNav">
             <h1 class="brand">Whisperbook <span class="heart">♥</span></h1>
             <p class="tagline">Speak freely. Stay anonymous.</p>
-
             <nav class="nav-links">
                 <a href="{% url 'home' %}"
                     class="nav-link {% if request.resolver_match.url_name == 'home' %}active{% endif %}">🏠 Home</a>
