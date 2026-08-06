@@ -22,7 +22,7 @@ load_dotenv(BASE_DIR / '.env')
 
 # Security
 SECRET_KEY = os.environ.get('SECRET_KEY')
-DEBUG = os.environ.get('DEBUG', 'False') == 'True'
+DEBUG = True
 
 if not SECRET_KEY and not DEBUG:
     raise ImproperlyConfigured(
@@ -38,8 +38,9 @@ ALLOWED_HOSTS = [
 vercel_host = (os.environ.get('VERCEL_URL') or '').strip()
 if vercel_host:
     ALLOWED_HOSTS.append(vercel_host)
-if DEBUG:
-    ALLOWED_HOSTS = list(dict.fromkeys(ALLOWED_HOSTS + ['localhost', '127.0.0.1', '[::1]', '.localhost', 'testserver']))
+
+local_hosts = ['localhost', '127.0.0.1', '[::1]', '.localhost', 'testserver']
+ALLOWED_HOSTS = list(dict.fromkeys(ALLOWED_HOSTS + local_hosts))
 
 DEFAULT_CSRF_TRUSTED_ORIGINS = 'http://localhost:8000,http://127.0.0.1:8000,https://localhost:8000'
 CSRF_TRUSTED_ORIGINS = [
@@ -47,8 +48,8 @@ CSRF_TRUSTED_ORIGINS = [
 ]
 if vercel_host:
     CSRF_TRUSTED_ORIGINS.append(f'https://{vercel_host}')
-if DEBUG:
-    CSRF_TRUSTED_ORIGINS.extend(['http://localhost:8000', 'http://127.0.0.1:8000'])
+CSRF_TRUSTED_ORIGINS.extend(['http://localhost:8000', 'http://127.0.0.1:8000', 'http://127.0.0.1:8000/'])
+CSRF_TRUSTED_ORIGINS = list(dict.fromkeys(CSRF_TRUSTED_ORIGINS))
 
 SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 SESSION_COOKIE_SECURE = not DEBUG
@@ -163,31 +164,42 @@ WSGI_APPLICATION = 'config.wsgi.application'
 # Database
 # ----------------------------------------------------
 
-DATABASE_URL = os.environ.get('DATABASE_URL')
+def _get_database_config():
+    database_url = (os.environ.get('DATABASE_URL') or '').strip()
+    use_sqlite = DEBUG or os.environ.get('USE_SQLITE', '').lower() in {'1', 'true', 'yes', 'on'}
 
-if DATABASE_URL:
-    parsed = urlparse(DATABASE_URL)
-    if parsed.scheme not in ('postgres', 'postgresql'):
-        raise ImproperlyConfigured('DATABASE_URL must start with postgres:// or postgresql://')
+    if use_sqlite:
+        logger.warning('Using local SQLite database for development.')
+        return {
+            'ENGINE': 'django.db.backends.sqlite3',
+            'NAME': BASE_DIR / 'db.sqlite3',
+        }
 
-    database_config = dj_database_url.parse(DATABASE_URL, conn_max_age=600)
-    database_config['OPTIONS'] = {'sslmode': 'require'}
-    DATABASES = {"default": database_config}
-else:
-    if not DEBUG:
-        raise ImproperlyConfigured(
-            'DATABASE_URL must be set in production environment.'
-        )
+    if database_url:
+        parsed = urlparse(database_url)
+        if parsed.scheme == 'sqlite':
+            return {
+                'ENGINE': 'django.db.backends.sqlite3',
+                'NAME': BASE_DIR / parsed.path.lstrip('/'),
+            }
+
+        if parsed.scheme not in ('postgres', 'postgresql'):
+            raise ImproperlyConfigured('DATABASE_URL must start with postgres://, postgresql://, or sqlite:///')
+
+        database_config = dj_database_url.parse(database_url, conn_max_age=600)
+        database_config['OPTIONS'] = {'sslmode': 'require'}
+        return database_config
 
     logger.warning(
         'DATABASE_URL not configured; using local SQLite fallback for development.'
     )
-    DATABASES = {
-        'default': {
-            'ENGINE': 'django.db.backends.sqlite3',
-            'NAME': BASE_DIR / 'db.sqlite3',
-        }
+    return {
+        'ENGINE': 'django.db.backends.sqlite3',
+        'NAME': BASE_DIR / 'db.sqlite3',
     }
+
+
+DATABASES = {'default': _get_database_config()}
 
 # ----------------------------------------------------
 # Allauth Settings

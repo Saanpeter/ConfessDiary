@@ -9,6 +9,7 @@
 
     <h2 class="page-title">Welcome to Whisperbook</h2>
 
+    {% if settings.SOCIALACCOUNT_PROVIDERS.google %}
     <p class="auth-text">
         Sign in with your Google account to continue.
     </p>
@@ -16,6 +17,7 @@
     <a href="{% provider_login_url 'google' %}" class="google-btn">
         Continue with Google
     </a>
+    {% endif %}
 
     <p>
         Already signed in?

@@ -45,10 +45,12 @@
         <button type="submit" class="post-btn auth-submit">Log in</button>
     </form>
 
+    {% if settings.SOCIALACCOUNT_PROVIDERS.google %}
     <div class="auth-divider"><span>or</span></div>
 
     <a href="{% provider_login_url 'google' process='login' %}" class="google-btn">
         Continue with Google
     </a>
+    {% endif %}
 </div>
 {% endblock %}
