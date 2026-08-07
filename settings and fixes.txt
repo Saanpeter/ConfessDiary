@@ -1,0 +1,50 @@
+warning: in the working copy of '.gitignore', LF will be replaced by CRLF the next time Git touches it
+[1mdiff --git a/.gitignore b/.gitignore[m
+[1mindex 7d2f510..87f36fb 100644[m
+[1m--- a/.gitignore[m
+[1m+++ b/.gitignore[m
+[36m@@ -1,10 +1,36 @@[m
+[31m-﻿.env[m
+[31m-*.pyc[m
+[32m+[m[32m﻿# Python[m
+ __pycache__/[m
+[32m+[m[32m*.py[cod][m
+[32m+[m[32m*$py.class[m
+[32m+[m
+[32m+[m[32m# Virtual Environments[m
+[32m+[m[32menv/[m
+[32m+[m[32m.venv/[m
+[32m+[m[32mvenv/[m
+[32m+[m
+[32m+[m[32m# Environment variables[m
+[32m+[m[32m.env[m
+[32m+[m
+[32m+[m[32m# Django[m
+ db.sqlite3[m
+[31m-/staticfiles/[m
+[31m-/media/[m
+[31m-.env.example[m
+[31m-.env.local[m
+[31m-.env.*.local[m
+[32m+[m[32mmedia/[m
+[32m+[m[32mstaticfiles/[m
+[32m+[m
+[32m+[m[32m# IDE[m
+[32m+[m[32m.vscode/[m
+[32m+[m[32m.idea/[m
+[32m+[m
+[32m+[m[32m# OS[m
+ .DS_Store[m
+[32m+[m[32mThumbs.db[m
+[32m+[m
+[32m+[m[32m# Logs[m
+[32m+[m[32m*.log[m
+[32m+[m
+[32m+[m[32m# Coverage[m
+[32m+[m[32m.coverage[m
+[32m+[m[32mhtmlcov/[m
+[32m+[m[32m.pytest_cache/[m
+[32m+[m
+[32m+[m[32m# Migrations cache[m
+[32m+[m[32m**/__pycache__/[m
+\ No newline at end of file[m

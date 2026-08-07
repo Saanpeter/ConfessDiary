@@ -1,0 +1,46 @@
+{% extends "base.html" %}
+
+{% block page_title %}Settings{% endblock %}
+{% block page_subtitle %}Manage your account and preferences.{% endblock %}
+
+{% block content %}
+<div class="settings-menu">
+
+    <div class="settings-group">
+        <h3>Account</h3>
+        <a href="{% url 'profile_settings' %}" class="settings-row">Profile Settings</a>
+        <a href="{% url 'activity_settings' %}" class="settings-row">Activity Checking</a>
+        <a href="{% url 'archive_view' %}" class="settings-row">Archive</a>
+    </div>
+
+    <div class="settings-group">
+        <h3>Notifications &amp; Interactions</h3>
+        <a href="{% url 'notification_settings' %}" class="settings-row">Notification Settings</a>
+        <a href="{% url 'comment_settings' %}" class="settings-row">Comments</a>
+    </div>
+
+    <div class="settings-group">
+        <h3>Content</h3>
+        <a href="{% url 'media_quality_settings' %}" class="settings-row">Media Quality</a>
+        <a href="{% url 'download_data' %}" class="settings-row">Archiving and Downloading</a>
+    </div>
+
+    <div class="settings-group">
+        <h3>Preferences</h3>
+        <a href="{% url 'language_sound_settings' %}" class="settings-row">Language and Sound</a>
+    </div>
+
+    <div class="settings-group">
+        <h3>Support</h3>
+        <a href="{% url 'report_problem' %}" class="settings-row">Report a Problem</a>
+        <a href="{% url 'help_page' %}" class="settings-row">Help</a>
+        <a href="{% url 'about_page' %}" class="settings-row">About</a>
+    </div>
+
+    <div class="settings-group">
+        <h3>Account Actions</h3>
+        <a href="{% url 'account_logout' %}" class="settings-row danger">Log Out</a>
+    </div>
+
+</div>
+{% endblock %}

@@ -1,0 +1,71 @@
+{% extends "base.html" %}
+
+{% block page_title %}Profile{% endblock %}
+{% block page_subtitle %}@{{ user.username }}{% endblock %}
+
+{% block content %}
+<div class="profile-header">
+    <div class="profile-avatar-wrap">
+        {% if user.profile_picture %}
+        <img src="{{ user.profile_picture.url }}" alt="Profile picture">
+        {% else %}
+        <span class="avatar-badge">🎭</span>
+        {% endif %}
+    </div>
+
+    <div class="profile-info">
+        <div class="profile-top-row">
+            <h2 class="profile-username">{{ user.username }}</h2>
+            <button type="button" class="profile-edit-btn" onclick="document.getElementById('editPanel').classList.toggle('active')">
+                Edit Profile
+            </button>
+        </div>
+
+        <div class="profile-stats">
+            <div><strong>{{ posts.count }}</strong> posts</div>
+            <div><strong>{{ total_likes }}</strong> likes received</div>
+        </div>
+
+        <p class="profile-bio">Speaking freely, staying anonymous. 🎭</p>
+
+        <div class="profile-edit-panel" id="editPanel">
+            <form method="post" enctype="multipart/form-data">
+                {% csrf_token %}
+                <label style="font-size:0.85rem;color:var(--ink-soft);">Update profile picture</label><br><br>
+                <input type="file" name="profile_picture" accept="image/*" style="font-family:'Kalam',cursive;">
+                <br><br>
+                <button type="submit" class="post-btn">Save</button>
+            </form>
+            <p style="font-size:0.8rem;color:var(--ink-soft);margin-top:10px;">
+                Only visible on your comments — your posts stay fully anonymous.
+            </p>
+        </div>
+    </div>
+</div>
+
+<div class="profile-tabs">
+    <span class="active">Your Confessions</span>
+</div>
+
+{% if posts %}
+<div class="post-grid">
+    {% for post in posts %}
+    <a href="{% url 'post_detail' post.id %}" class="grid-item">
+        {% if post.image and post.image_url %}
+        <img src="{{ post.image_url }}" alt="Post image" loading="lazy">
+        {% elif post.video and post.video_url %}
+        <video src="{{ post.video_url }}" controls preload="metadata" playsinline></video>
+        {% else %}
+        <div class="grid-item-text">{{ post.content|truncatewords:12 }}</div>
+        {% endif %}
+        <div class="grid-item-overlay">
+            <span>♥ {{ post.likes.count }}</span>
+            <span>💬 {{ post.comments.count }}</span>
+        </div>
+    </a>
+    {% endfor %}
+</div>
+{% else %}
+<div class="empty-state"><p>You haven't posted anything yet.</p></div>
+{% endif %}
+{% endblock %}

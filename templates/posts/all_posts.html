@@ -1,0 +1,50 @@
+{% extends "base.html" %}
+
+{% block page_title %}All Posts{% endblock %}
+{% block page_subtitle %}Every confession, in one place.{% endblock %}
+
+{% block content %}
+<div class="post-list">
+    {% for post in posts %}
+    <article class="post-card">
+        {% if post.image and post.image_url %}
+        <div class="polaroid">
+            <img src="{{ post.image_url }}" alt="Post image" loading="lazy">
+        </div>
+        {% elif post.video and post.video_url %}
+        <div class="polaroid polaroid-video">
+            <video src="{{ post.video_url }}" controls preload="metadata" playsinline></video>
+            <span class="play-icon">&#9654;</span>
+        </div>
+        {% endif %}
+
+        <div class="post-body">
+            <p class="post-text">{{ post.content }}</p>
+            <span class="post-time">{{ post.created_at|timesince }} ago</span>
+
+            <div class="post-actions">
+                <form method="post" action="{% url 'like_post' post.id %}" style="display:inline;">
+                    {% csrf_token %}
+                    <button type="submit" class="{% if user in post.likes.all %}liked{% endif %}">
+                        &hearts; {{ post.likes.count }}
+                    </button>
+                </form>
+                <span>{{ post.comments.count }} comments</span>
+                <form method="post" action="{% url 'bookmark_post' post.id %}" style="display:inline;">
+                    {% csrf_token %}
+                    <button type="submit">Save</button>
+                </form>
+                {% if user == post.author %}
+                <a href="{% url 'delete_post' post.id %}" style="color:#d9534f;text-decoration:none;">Delete</a>
+                {% endif %}
+                <a href="{% url 'post_detail' post.id %}" class="view-comments">View {{ post.comments.count }} comments</a>
+            </div>
+        </div>
+    </article>
+    {% empty %}
+    <div class="empty-state">
+        <p>No confessions yet. Be the first to share something.</p>
+    </div>
+    {% endfor %}
+</div>
+{% endblock %}

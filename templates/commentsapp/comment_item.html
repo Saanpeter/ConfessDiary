@@ -1,0 +1,50 @@
+{% load comment_tags %}
+<div class="comment-item{% if depth > 0 %} comment-reply{% endif %} comment-depth-{{ depth }}">
+    <span class="avatar-badge small">🎭</span>
+    <div class="comment-body">
+        <div class="comment-header">
+            <strong>{{ comment.user.username }}</strong>
+            <span class="comment-time">{{ comment.created_at|timesince }} ago</span>
+        </div>
+        {% if comment.text %}
+            <p class="comment-text">{{ comment.text }}</p>
+        {% endif %}
+        {% if comment.sticker %}
+            <img class="comment-sticker" src="{{ comment.sticker.url }}" alt="Sticker">
+        {% endif %}
+        {% if comment.gif_url %}
+            <img class="comment-sticker" src="{{ comment.gif_url }}" alt="GIF">
+        {% endif %}
+        <div class="comment-actions">
+            {% if user.is_authenticated %}
+                <button type="button" class="comment-reply-button" data-comment-id="{{ comment.id }}">Reply</button>
+                {% if user == comment.user %}
+                    <form method="post" action="{% url 'delete_comment' comment.id %}" class="inline-form">
+                        {% csrf_token %}
+                        <button type="submit" class="comment-delete">🗑️ Delete</button>
+                    </form>
+                {% endif %}
+            {% endif %}
+        </div>
+        <form method="post" action="{% url 'add_comment' comment.post.id %}" enctype="multipart/form-data" class="reply-form" id="reply-form-{{ comment.id }}" style="display:none;">
+            {% csrf_token %}
+            <input type="hidden" name="parent_id" value="{{ comment.id }}">
+            <textarea name="text" rows="3" placeholder="Write your reply..."></textarea>
+            <div class="composer-actions">
+                <label class="small-button">😊
+                    <input type="file" name="sticker" accept="image/*" hidden>
+                </label>
+                <button type="button" class="gif-picker-open" data-comment-id="{{ comment.id }}">GIF</button>
+                <input type="hidden" name="gif_url" id="gif-url-{{ comment.id }}">
+                <button type="submit" class="post-btn">Reply</button>
+            </div>
+        </form>
+        {% if comment.replies.all %}
+            <div class="comment-replies">
+                {% for reply in comment.replies.all %}
+                    {% render_comment reply depth|add:1 %}
+                {% endfor %}
+            </div>
+        {% endif %}
+    </div>
+</div>

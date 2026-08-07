@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+
+{% block page_title %}Your Activity{% endblock %}
+{% block page_subtitle %}Settings{% endblock %}
+
+{% block content %}
+<div class="placeholder-card" style="text-align:left;">
+    <h3 style="font-family:'Caveat',cursive;font-size:1.4rem;">Posts ({{ my_posts.count }})</h3>
+    {% for post in my_posts|slice:":5" %}
+    <p style="border-bottom:1px solid #eee;padding:6px 0;">{{ post.content|truncatewords:15 }} — {{ post.created_at|timesince }} ago</p>
+    {% empty %}<p style="color:var(--ink-soft);">No posts yet.</p>{% endfor %}
+
+    <h3 style="font-family:'Caveat',cursive;font-size:1.4rem;margin-top:20px;">Liked Posts ({{ liked_posts.count }})</h3>
+    {% for post in liked_posts|slice:":5" %}
+    <p style="border-bottom:1px solid #eee;padding:6px 0;">{{ post.content|truncatewords:15 }}</p>
+    {% empty %}<p style="color:var(--ink-soft);">No likes yet.</p>{% endfor %}
+
+    <h3 style="font-family:'Caveat',cursive;font-size:1.4rem;margin-top:20px;">Comments ({{ my_comments.count }})</h3>
+    {% for comment in my_comments|slice:":5" %}
+    <p style="border-bottom:1px solid #eee;padding:6px 0;">{{ comment.text|truncatewords:15 }} — {{ comment.created_at|timesince }} ago</p>
+    {% empty %}<p style="color:var(--ink-soft);">No comments yet.</p>{% endfor %}
+
+    <p style="margin-top:20px;"><a href="{% url 'settings_page' %}" class="nav-link">← Back to Settings</a></p>
+</div>
+{% endblock %}

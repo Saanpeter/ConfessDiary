@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+
+{% block page_title %}Media Quality{% endblock %}
+{% block page_subtitle %}Settings{% endblock %}
+
+{% block content %}
+<div class="placeholder-card" style="text-align:left;">
+    <p style="color:var(--ink-soft);">Choose upload quality for photos and videos.</p>
+    <form method="post">
+        {% csrf_token %}
+        <label style="display:block;margin-bottom:10px;">
+            <input type="radio" name="media_quality" value="high" {% if settings_obj.media_quality == 'high' %}checked{% endif %}>
+            High Quality
+        </label>
+        <label style="display:block;margin-bottom:20px;">
+            <input type="radio" name="media_quality" value="saver" {% if settings_obj.media_quality == 'saver' %}checked{% endif %}>
+            Data Saver
+        </label>
+        <button type="submit" class="post-btn">Save</button>
+    </form>
+    <p style="margin-top:20px;"><a href="{% url 'settings_page' %}" class="nav-link">← Back to Settings</a></p>
+</div>
+{% endblock %}

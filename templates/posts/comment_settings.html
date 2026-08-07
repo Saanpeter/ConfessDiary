@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+
+{% block page_title %}Comment Settings{% endblock %}
+{% block page_subtitle %}Settings{% endblock %}
+
+{% block content %}
+<div class="placeholder-card" style="text-align:left;">
+    <p style="color:var(--ink-soft);">Choose who can comment on your posts.</p>
+    <form method="post">
+        {% csrf_token %}
+        <label style="display:block;margin-bottom:10px;">
+            <input type="radio" name="who_can_comment" value="everyone" {% if settings_obj.who_can_comment == 'everyone' %}checked{% endif %}>
+            Everyone
+        </label>
+        <label style="display:block;margin-bottom:20px;">
+            <input type="radio" name="who_can_comment" value="nobody" {% if settings_obj.who_can_comment == 'nobody' %}checked{% endif %}>
+            No one
+        </label>
+        <button type="submit" class="post-btn">Save</button>
+    </form>
+    <p style="margin-top:20px;"><a href="{% url 'settings_page' %}" class="nav-link">← Back to Settings</a></p>
+</div>
+{% endblock %}

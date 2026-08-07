@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+
+{% block page_title %}Delete Post?{% endblock %}
+{% block page_subtitle %}This can't be undone.{% endblock %}
+
+{% block content %}
+<div class="placeholder-card">
+    <h2>Delete this confession?</h2>
+    <p class="post-text" style="text-align:left;margin:16px 0;">"{{ post.content|truncatewords:30 }}"</p>
+    <form method="post" action="{% url 'delete_post' post.id %}">
+        {% csrf_token %}
+        <button type="submit" class="post-btn" style="background:#d9534f;">Yes, delete it</button>
+        <a href="{% url 'home' %}" class="nav-link" style="margin-left:16px;">Cancel</a>
+    </form>
+</div>
+{% endblock %}
