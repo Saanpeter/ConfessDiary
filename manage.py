@@ -2,7 +2,7 @@
 """Django's command-line utility for administrative tasks."""
 import os
 import sys
-
+from django.core.mail import send_mail
 
 def main():
     """Run administrative tasks."""
@@ -17,6 +17,12 @@ def main():
         ) from exc
     execute_from_command_line(sys.argv)
 
+send_mail(
+    "Test Email",
+    "Whisperbook email test",
+    "onboarding@resend.dev",
+    ["your-email@gmail.com"],
+)
 
 if __name__ == '__main__':
     main()
