@@ -22,7 +22,7 @@ load_dotenv(BASE_DIR / '.env')
 
 # Security
 SECRET_KEY = os.environ.get('SECRET_KEY')
-DEBUG = True
+DEBUG = os.environ.get("DEBUG") == "True"
 
 if not SECRET_KEY and not DEBUG:
     raise ImproperlyConfigured(
@@ -344,4 +344,4 @@ EMAIL_HOST_USER = "resend"
 
 EMAIL_HOST_PASSWORD = os.environ.get("RESEND_API_KEY")
 
-DEFAULT_FROM_EMAIL = "Whisperbook <onboarding@resend.dev>"
+DEFAULT_FROM_EMAIL = "Whisperbook <noreply@mail.confessdiary.com>"
